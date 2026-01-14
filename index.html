@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floating Glass Cafe Menu</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        body { margin: 0; background-color: #000; font-family: 'Segoe UI', sans-serif; }
+        #instructions {
+            position: absolute; top: 10%; width: 100%; text-align: center;
+            color: white; z-index: 10; pointer-events: none;
+        }
+        /* Custom AR Button Style */
+        #ARButton {
+            background: rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3) !important;
+            color: white !important;
+            font-weight: bold !important;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div id="instructions">
+        <h1>Cafe AR Experience</h1>
+        <p>Tap the button below to see the floating menu</p>
+    </div>
+
+    <script type="module">
+        import { ARButton } from 'https://unpkg.com/three@0.128.0/examples/jsm/webxr/ARButton.js';
+
+        let camera, scene, renderer, menuMesh;
+
+        init();
+        animate();
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+
+            // Lighting for the Glass Effect
+            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+            scene.add(light);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.xr.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            // Add the AR Button
+            document.body.appendChild(ARButton.createButton(renderer));
+
+            // Create the Menu Panel (Vertical Glass)
+            const geometry = new THREE.PlaneGeometry(0.4, 0.6); // 40cm x 60cm
+            
+            const loader = new THREE.TextureLoader();
+            const texture = loader.load('https://i.ibb.co/VpkX8Gz/transparent-cafe-menu.png');
+
+            const material = new THREE.MeshPhysicalMaterial({
+                map: texture,
+                transparent: true,
+                opacity: 0.95,
+                transmission: 0.4,  // The "Glass" effect
+                roughness: 0.05,
+                metalness: 0.1,
+                side: THREE.DoubleSide
+            });
+
+            menuMesh = new THREE.Mesh(geometry, material);
+            
+            // Initial position: 0.5 meters in front of the camera
+            menuMesh.position.set(0, 0, -0.6); 
+            scene.add(menuMesh);
+        }
+
+        function animate() {
+            renderer.setAnimationLoop(render);
+        }
+
+        function render() {
+            // Gentle floating animation
+            menuMesh.position.y = Math.sin(Date.now() * 0.002) * 0.02;
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
