@@ -3,137 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AR Cafe Menu</title>
+    <title>BrewVerse Café | Next-Gen Menu</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --ar-cyan: #00f2ff;
-            --glass: rgba(255, 255, 255, 0.15);
+            --primary-glow: #7952b3;
+            --accent-gold: #c9a66b;
+            --glass-bg: rgba(20, 15, 12, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #ffffff;
         }
 
-        body, html {
+        body {
+            background-color: #0a0806;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(121, 82, 179, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(201, 166, 107, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Inter', -apple-system, sans-serif;
-            /* Placeholder to simulate looking through a phone camera at a cafe */
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), 
-                        url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1000&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            overflow-x: hidden;
         }
 
-        /* The AR Container */
-        .ar-card {
-            width: 85%;
-            max-width: 350px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1.5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 30px;
-            padding: 25px;
-            color: white;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
-            position: relative;
-            animation: float 5s ease-in-out infinite;
-        }
-
-        /* Scanning Line Effect */
-        .ar-card::before {
+        /* Animated Background Overlay */
+        body::before {
             content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--ar-cyan);
-            box-shadow: 0 0 15px var(--ar-cyan);
-            animation: scan 3s linear infinite;
-            opacity: 0.5;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            animation: fadeInDown 1s ease-out;
         }
 
         h1 {
-            font-size: 1.5rem;
-            text-align: center;
-            margin-bottom: 25px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 10px;
+            font-family: 'Pacifico', cursive;
+            font-size: 5.5rem;
+            margin: 0;
+            background: linear-gradient(to right, #fff, var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(201, 166, 107, 0.3));
         }
 
-        .item {
+        .subtitle {
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            font-weight: 300;
+            color: var(--accent-gold);
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Modern Grid Layout */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            width: 90%;
+            max-width: 1100px;
+            padding-bottom: 100px;
+        }
+
+        .category-card {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 30px;
+            padding: 50px 30px;
+            text-decoration: none;
+            color: white;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
         }
 
-        .name { font-weight: 500; font-size: 1.1rem; }
-        
-        .price { 
-            color: var(--ar-cyan);
-            font-weight: bold;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+        /* Floating Animation */
+        .category-card:nth-child(even) { animation: float 6s ease-in-out infinite; }
+        .category-card:nth-child(odd) { animation: float 6s ease-in-out infinite 1s; }
+
+        .category-card::before {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(121, 82, 179, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s;
         }
 
-        .order-btn {
-            width: 100%;
-            margin-top: 25px;
-            padding: 15px;
-            border-radius: 15px;
-            border: none;
-            background: var(--ar-cyan);
-            color: black;
-            font-weight: bold;
-            text-transform: uppercase;
+        .category-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            border-color: var(--primary-glow);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px rgba(121, 82, 179, 0.2);
+        }
+
+        .category-card:hover::before { opacity: 1; }
+
+        .icon-box {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            font-size: 3rem;
+            color: var(--primary-glow);
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .category-card:hover .icon-box {
+            transform: rotateY(180deg);
+            background: var(--primary-glow);
+            color: white;
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
+        .category-name {
+            font-weight: 800;
+            font-size: 1.4rem;
             letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(0, 242, 255, 0.4);
+            position: relative;
         }
 
-        /* Animations */
+        /* Status Indicators */
+        .badge-ar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.6rem;
+            background: rgba(76, 209, 55, 0.1);
+            color: #4cd137;
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(76, 209, 55, 0.2);
+            font-weight: bold;
+        }
+
+        /* Keyframes */
         @keyframes float {
-            0%, 100% { transform: translateY(0) rotateX(2deg); }
-            50% { transform: translateY(-20px) rotateX(-2deg); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
-        @keyframes scan {
-            0% { top: 0%; }
-            100% { top: 100%; }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+            h1 { font-size: 4rem; }
+        }
+
+        @media (max-width: 600px) {
+            .category-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 3rem; }
+            .category-card { padding: 30px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ar-card">
-        <h1>Menu</h1>
-        
-        <div class="item">
-            <span class="name">Iced Americano</span>
-            <span class="price">$4.20</span>
-        </div>
+    <header>
+        <div class="subtitle">Welcome to the future of taste</div>
+        <h1>BrewVerse Café</h1>
+    </header>
 
-        <div class="item">
-            <span class="name">Oat Milk Latte</span>
-            <span class="price">$5.50</span>
-        </div>
+    <div class="category-grid">
+        <a href="#" class="category-card">
+            <span class="badge-ar">● AR LIVE</span>
+            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
+            <span class="category-name">Starters</span>
+        </a>
 
-        <div class="item">
-            <span class="name">Matcha Green Tea</span>
-            <span class="price">$4.80</span>
-        </div>
+        <a href="#" class="category-card">
+            <span class="badge-ar">● AR LIVE</span>
+            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
+            <span class="category-name">Main Course</span>
+        </a>
 
-        <div class="item">
-            <span class="name">Croissant</span>
-            <span class="price">$3.50</span>
-        </div>
+        <a href="#" class="category-card">
+            <span class="badge-ar">● AR LIVE</span>
+            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
+            <span class="category-name">Mocktails</span>
+        </a>
 
-        <button class="order-btn">Tap to Order</button>
+        <a href="#" class="category-card">
+            <span class="badge-ar">● AR LIVE</span>
+            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
+            <span class="category-name">Hot Beverages</span>
+        </a>
+
+        <a href="#" class="category-card">
+            <span class="badge-ar">● AR LIVE</span>
+            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
+            <span class="category-name">Cold Beverages</span>
+        </a>
+
+        <a href="#" class="category-card">
+            <span class="badge-ar">● AR LIVE</span>
+            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
+            <span class="category-name">Desserts</span>
+        </a>
     </div>
 
 </body>
