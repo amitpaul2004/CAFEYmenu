@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BrewVerse Café | JS Motion Menu</title>
+    <title>BrewVerse Café | Audio-Visual Menu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -11,7 +11,7 @@
         :root {
             --primary-glow: #7952b3;
             --accent-gold: #c9a66b;
-            --glass-bg: rgba(20, 15, 12, 0.6);
+            --glass-bg: rgba(20, 15, 12, 0.7);
             --text-main: #ffffff;
         }
 
@@ -28,28 +28,25 @@
             overflow: hidden;
         }
 
-        /* Moving Background Spotlight */
         #cursor-glow {
             position: fixed;
             top: 0; left: 0;
-            width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(121, 82, 179, 0.15) 0%, transparent 70%);
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(121, 82, 179, 0.12) 0%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
             transform: translate(-50%, -50%);
             z-index: -1;
-            transition: width 0.3s, height 0.3s;
         }
 
         header {
             text-align: center;
             margin-bottom: 50px;
-            z-index: 10;
         }
 
         h1 {
             font-family: 'Pacifico', cursive;
-            font-size: 5rem;
+            font-size: 4.5rem;
             margin: 0;
             background: linear-gradient(to right, #fff, var(--accent-gold));
             -webkit-background-clip: text;
@@ -59,10 +56,10 @@
         .category-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
+            gap: 25px;
             width: 90%;
             max-width: 1000px;
-            perspective: 1000px; /* Essential for 3D tilt */
+            perspective: 1000px;
         }
 
         .category-card {
@@ -70,58 +67,46 @@
             background: var(--glass-bg);
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 30px;
+            border-radius: 25px;
             padding: 40px;
-            text-decoration: none;
-            color: white;
+            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            transform-style: preserve-3d; /* Allows child elements to float in 3D */
-            transition: box-shadow 0.3s;
+            transform-style: preserve-3d;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         .category-card:hover {
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
             border-color: var(--primary-glow);
+            box-shadow: 0 15px 40px rgba(121, 82, 179, 0.2);
         }
 
         .icon-box {
-            width: 80px; height: 80px;
+            width: 70px; height: 70px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 20px;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--primary-glow);
-            transform: translateZ(50px); /* Makes icon float above the card */
-            transition: 0.5s;
+            transform: translateZ(40px);
+            pointer-events: none;
         }
 
         .category-name {
             font-weight: 800;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             letter-spacing: 2px;
-            transform: translateZ(30px); /* Makes text float slightly less than icon */
-        }
-
-        .badge-ar {
-            position: absolute;
-            top: 15px; right: 15px;
-            font-size: 0.6rem;
-            color: #4cd137;
-            border: 1px solid #4cd137;
-            padding: 4px 10px;
-            border-radius: 20px;
             transform: translateZ(20px);
+            pointer-events: none;
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .category-grid { grid-template-columns: repeat(2, 1fr); }
-            body { overflow-y: auto; height: auto; padding: 40px 0; }
+            h1 { font-size: 3rem; }
         }
     </style>
 </head>
@@ -131,42 +116,31 @@
 
     <header>
         <h1>BrewVerse Café</h1>
-        <div style="letter-spacing: 5px; color: var(--accent-gold); font-size: 0.8rem;">INTERACTIVE EXPERIENCE</div>
+        <p style="color: var(--accent-gold); letter-spacing: 3px; font-size: 0.7rem;">SELECT CATEGORY</p>
     </header>
 
     <div class="category-grid">
-        <div class="category-card" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
-            <span class="badge-ar">LIVE</span>
+        <div class="category-card" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
             <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
             <span class="category-name">STARTERS</span>
         </div>
-
-        <div class="category-card" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
-            <span class="badge-ar">LIVE</span>
+        <div class="category-card" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
             <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
             <span class="category-name">MAIN COURSE</span>
         </div>
-
-        <div class="category-card" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
-            <span class="badge-ar">LIVE</span>
+        <div class="category-card" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
             <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
             <span class="category-name">MOCKTAILS</span>
         </div>
-
-        <div class="category-card" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
-            <span class="badge-ar">LIVE</span>
+        <div class="category-card" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
             <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
             <span class="category-name">HOT DRINKS</span>
         </div>
-
-        <div class="category-card" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
-            <span class="badge-ar">LIVE</span>
+        <div class="category-card" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
             <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
             <span class="category-name">COLD DRINKS</span>
         </div>
-
-        <div class="category-card" data-tilt data-tilt-max="15" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.3">
-            <span class="badge-ar">LIVE</span>
+        <div class="category-card" data-tilt data-tilt-glare data-tilt-max-glare="0.2">
             <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
             <span class="category-name">DESSERTS</span>
         </div>
@@ -174,21 +148,43 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
     <script>
-        // 1. Mouse Spotlight Effect
+        // --- 1. Audio Setup ---
+        // Short whoosh for hover
+        const whooshSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
+        whooshSfx.volume = 0.2;
+
+        // Sharp click for selection
+        const clickSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+        clickSfx.volume = 0.4;
+
+        // --- 2. Event Listeners ---
+        const cards = document.querySelectorAll('.category-card');
+
+        cards.forEach(card => {
+            // Play whoosh when mouse enters
+            card.addEventListener('mouseenter', () => {
+                whooshSfx.currentTime = 0; // Reset to start
+                whooshSfx.play();
+            });
+
+            // Play click when mouse is pressed down
+            card.addEventListener('mousedown', () => {
+                clickSfx.currentTime = 0;
+                clickSfx.play();
+                card.style.transform = 'scale(0.96) translateZ(0px)';
+            });
+
+            // Reset scale on mouse up
+            card.addEventListener('mouseup', () => {
+                card.style.transform = 'scale(1) translateZ(20px)';
+            });
+        });
+
+        // --- 3. Cursor Glow Movement ---
         const glow = document.getElementById('cursor-glow');
         document.addEventListener('mousemove', (e) => {
             glow.style.left = e.clientX + 'px';
             glow.style.top = e.clientY + 'px';
-        });
-
-        // 2. Click Animation
-        document.querySelectorAll('.category-card').forEach(card => {
-            card.addEventListener('mousedown', () => {
-                card.style.transform = 'scale(0.95) translateZ(0px)';
-            });
-            card.addEventListener('mouseup', () => {
-                card.style.transform = 'scale(1.02) translateZ(20px)';
-            });
         });
     </script>
 </body>
