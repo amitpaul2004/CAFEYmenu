@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BrewVerse Café | Touch Animated</title>
+    <title>BrewVerse Café | Immersive Experience</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -14,6 +14,61 @@
             --ripple-color: rgba(201, 166, 107, 0.4);
         }
 
+        /* --- LOADING SCREEN --- */
+        #loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #0a0806;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+        }
+
+        .loader-content {
+            text-align: center;
+        }
+
+        .spinning-cup {
+            font-size: 4rem;
+            color: var(--accent-gold);
+            display: inline-block;
+            animation: coffeeSpin 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 15px rgba(201, 166, 107, 0.4));
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #fff;
+            letter-spacing: 5px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+            animation: pulseText 1.5s infinite;
+        }
+
+        @keyframes coffeeSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        /* Hide loader class */
+        .loader-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* --- MAIN UI --- */
         body {
             margin: 0; padding: 0;
             min-height: 100vh;
@@ -25,11 +80,7 @@
             padding-bottom: 90px;
         }
 
-        /* Cinematic Background */
-        .bg-container {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: -1;
-        }
+        .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
         .bg-image {
             width: 100%; height: 100%;
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), 
@@ -46,11 +97,7 @@
         header { text-align: center; padding: 40px 20px; }
         h1 { font-family: 'Pacifico', cursive; font-size: 3rem; margin: 0; color: var(--accent-gold); }
 
-        /* --- INTERACTIVE CATEGORY GRID --- */
-        .category-grid {
-            display: flex; flex-direction: column;
-            gap: 15px; width: 92%; max-width: 400px;
-        }
+        .category-grid { display: flex; flex-direction: column; gap: 15px; width: 92%; max-width: 400px; }
 
         .category-card {
             position: relative;
@@ -60,19 +107,13 @@
             border-radius: 20px;
             padding: 22px;
             display: flex; align-items: center; gap: 18px;
-            overflow: hidden; /* Needed for ripple effect */
+            overflow: hidden;
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            -webkit-tap-highlight-color: transparent; /* Removes blue box on Android */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* --- TOUCH ANIMATIONS --- */
-        /* 1. The Elastic Squeeze */
-        .category-card:active {
-            transform: scale(0.94);
-            border-color: var(--accent-gold);
-        }
+        .category-card:active { transform: scale(0.94); border-color: var(--accent-gold); }
 
-        /* 2. The Liquid Ripple Circle */
         .ripple {
             position: absolute;
             background: var(--ripple-color);
@@ -93,19 +134,10 @@
             border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.6rem; color: var(--accent-gold);
-            transition: 0.3s;
-        }
-
-        /* Icon Pulse on touch */
-        .category-card:active .icon-box {
-            transform: scale(1.2) rotate(5deg);
-            background: var(--accent-gold);
-            color: #000;
         }
 
         .category-name { font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; }
 
-        /* Bottom Nav Bar */
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; height: 75px;
             background: rgba(10,10,10,0.98); backdrop-filter: blur(20px);
@@ -120,10 +152,17 @@
 </head>
 <body>
 
+    <div id="loader">
+        <div class="loader-content">
+            <div class="spinning-cup"><i class="bi bi-cup-hot"></i></div>
+            <div class="loading-text">Brewing Experience...</div>
+        </div>
+    </div>
+
     <div class="bg-container"><div class="bg-image"></div></div>
 
     <header>
-        <div style="letter-spacing: 6px; font-size: 0.7rem; opacity: 0.6;">TOUCH TO EXPLORE</div>
+        <div style="letter-spacing: 6px; font-size: 0.7rem; opacity: 0.6;">EST. 2026</div>
         <h1>BrewVerse</h1>
     </header>
 
@@ -161,31 +200,32 @@
     </nav>
 
     <script>
+        // --- PRELOADER LOGIC ---
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            // Wait for 2 seconds (2000ms) then hide
+            setTimeout(() => {
+                loader.classList.add('loader-hidden');
+            }, 2000);
+        });
+
+        // --- INTERACTION LOGIC ---
         const clickSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
         clickSfx.volume = 0.4;
 
-        document.querySelectorAll('.category-card').forEach(card => {
-            // TOUCHSTART for instant mobile response
+        document.querySelectorAll('.category-grid .category-card').forEach(card => {
             card.addEventListener('touchstart', function(e) {
-                // 1. Play Sound
                 clickSfx.currentTime = 0;
                 clickSfx.play().catch(() => {});
 
-                // 2. Create Ripple
                 const ripple = document.createElement('span');
                 ripple.classList.add('ripple');
-                
-                // Get touch coordinates relative to card
                 const rect = card.getBoundingClientRect();
                 const x = e.touches[0].clientX - rect.left;
                 const y = e.touches[0].clientY - rect.top;
-                
                 ripple.style.left = `${x}px`;
                 ripple.style.top = `${y}px`;
-                
                 this.appendChild(ripple);
-
-                // 3. Remove ripple after animation
                 setTimeout(() => ripple.remove(), 600);
             });
         });
