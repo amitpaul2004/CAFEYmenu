@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BrewVerse Café | Immersive Digital Menu</title>
+    <title>BrewVerse Café | Elite Digital Menu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -64,15 +64,18 @@
 
         .category-card {
             position: relative; background: var(--glass-bg); backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
             padding: 22px; display: flex; align-items: center; gap: 18px;
             overflow: hidden; opacity: 0; transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s, border-color 0.2s;
             -webkit-tap-highlight-color: transparent; cursor: pointer;
         }
         body.is-visible .category-card { opacity: 1; transform: scale(1); }
 
-        .category-card.clicked { animation: hologramFlash 0.4s ease-out; border-color: var(--accent-gold); }
+        .category-card.clicked {
+            animation: hologramFlash 0.4s ease-out forwards;
+            border-color: var(--accent-gold);
+        }
         @keyframes hologramFlash {
             0% { box-shadow: 0 0 0px var(--hologram-glow); background: var(--glass-bg); }
             50% { box-shadow: 0 0 30px var(--hologram-glow); background: rgba(201, 166, 107, 0.2); }
@@ -96,6 +99,69 @@
         .nav-item { color: rgba(255,255,255,0.4); font-size: 1.4rem; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
         .nav-item.active { color: var(--accent-gold); }
         .nav-label { font-size: 0.6rem; text-transform: uppercase; margin-top: 4px; }
+
+        /* --- ADVANCED FLOATING CART --- */
+.floating-cart {
+    position: fixed;
+    right: 20px;
+    bottom: 100px; /* Above the bottom nav */
+    width: 65px;
+    height: 65px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--accent-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 10px rgba(201, 166, 107, 0.2);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reveal when page is visible */
+body.is-visible .floating-cart {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.cart-wrapper {
+    position: relative;
+    font-size: 1.8rem;
+    color: var(--accent-gold);
+    transition: transform 0.3s ease;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 900;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #000;
+}
+
+/* Breathing Animation */
+@keyframes cartPulse {
+    0% { box-shadow: 0 0 0 0 rgba(201, 166, 107, 0.4); transform: translateY(0); }
+    50% { box-shadow: 0 0 20px 10px rgba(201, 166, 107, 0); transform: translateY(-8px); }
+    100% { box-shadow: 0 0 0 0 rgba(201, 166, 107, 0); transform: translateY(0); }
+}
+
+.floating-cart {
+    animation: cartPulse 3s infinite ease-in-out;
+}
     </style>
 </head>
 <body>
@@ -114,7 +180,10 @@
 
     <div class="bg-container"><div class="bg-image"></div></div>
 
-    <header><h1>BrewVerse</h1></header>
+    <header>
+        <div style="letter-spacing: 6px; font-size: 0.7rem; opacity: 0.6;">EST. 2026</div>
+        <h1>BrewVerse</h1>
+    </header>
 
     <div class="category-grid">
         <div class="category-card" data-value="Starters"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
@@ -125,14 +194,17 @@
         <div class="category-card" data-value="Desserts"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
     </div>
 
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item active"><i class="bi bi-grid"></i><span class="nav-label">Menu</span></a>
-        <a href="#" class="nav-item"><i class="bi bi-cart"></i><span class="nav-label">Cart</span></a>
-        <a href="#" class="nav-item"><i class="bi bi-receipt"></i><span class="nav-label">Orders</span></a>
-    </nav>
+    
+
+<div class="floating-cart" id="cart-btn">
+    <div class="cart-wrapper">
+        <i class="bi bi-cart3"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+    </div>
+</div>
 
     <script>
-        // --- 1. TEXT SCRAMBLE LOGIC ---
+        // --- TEXT SCRAMBLE LOGIC ---
         class TextScramble {
             constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
             setText(newText) {
@@ -169,30 +241,34 @@
             randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
         }
 
-        // --- 2. ADVANCED LOADER ANIMATION (JS) ---
-        const cup = document.getElementById('js-cup');
-        const aura = document.getElementById('aura');
-        
-        const cupAnim = cup.animate([
-            { transform: 'rotateY(0deg) rotateX(0deg) translateY(0px)' },
-            { transform: 'rotateY(180deg) rotateX(15deg) translateY(-15px)' },
-            { transform: 'rotateY(360deg) rotateX(0deg) translateY(0px)' }
-        ], { duration: 3000, iterations: Infinity, easing: 'cubic-bezier(0.45, 0.05, 0.55, 0.95)' });
-
-        aura.animate([{ transform: 'scale(0.8)', opacity: 0.3 }, { transform: 'scale(1.4)', opacity: 0.8 }, { transform: 'scale(0.8)', opacity: 0.3 }], 
-        { duration: 2000, iterations: Infinity, easing: 'ease-in-out' });
-
-        // --- 3. PAGE INITIALIZATION & NAVIGATION ---
         const confirmSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
         const decodeSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2567/2567-preview.mp3');
         confirmSfx.volume = 0.5; decodeSfx.volume = 0.2;
 
-        window.addEventListener('load', () => {
+        const cup = document.getElementById('js-cup');
+        const aura = document.getElementById('aura');
+        cup.animate([
+            { transform: 'rotateY(0deg) rotateX(0deg) translateY(0px)' },
+            { transform: 'rotateY(180deg) rotateX(15deg) translateY(-15px)' },
+            { transform: 'rotateY(360deg) rotateX(0deg) translateY(0px)' }
+        ], { duration: 3000, iterations: Infinity, easing: 'cubic-bezier(0.45, 0.05, 0.55, 0.95)' });
+        aura.animate([{ transform: 'scale(0.8)', opacity: 0.3 }, { transform: 'scale(1.4)', opacity: 0.8 }, { transform: 'scale(0.8)', opacity: 0.3 }], 
+        { duration: 2000, iterations: Infinity, easing: 'ease-in-out' });
+
+        // --- BACK BUTTON FIX & INITIALIZATION ---
+        function init() {
+            const loader = document.getElementById('loader');
+            const cards = document.querySelectorAll('.category-card');
+            
+            document.body.classList.remove('is-visible');
+            loader.classList.remove('loader-hidden');
+
             setTimeout(() => {
-                document.getElementById('loader').classList.add('loader-hidden');
+                loader.classList.add('loader-hidden');
                 document.body.classList.add('is-visible');
                 
-                document.querySelectorAll('.category-card').forEach((card, i) => {
+                cards.forEach((card, i) => {
+                    card.classList.remove('clicked');
                     const el = card.querySelector('.category-name');
                     const fx = new TextScramble(el);
                     setTimeout(() => {
@@ -202,17 +278,31 @@
                     }, 500 + (i * 150));
                 });
             }, 2000);
-        });
+        }
 
+        window.addEventListener('pageshow', (event) => { init(); });
+
+        // --- ROBUST NAVIGATION ---
         document.querySelectorAll('.category-card').forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', function() {
                 confirmSfx.currentTime = 0; confirmSfx.play().catch(() => {});
-                card.classList.add('clicked');
-                setTimeout(() => { window.location.href = card.dataset.value + ".html"; }, 450);
+                this.classList.add('clicked');
+                
+                const target = this.getAttribute('data-value') + ".html";
+
+                // Animation exit
+                this.animate([
+                    { transform: 'scale(1)', opacity: 1 },
+                    { transform: 'scale(1.3)', opacity: 0 }
+                ], { duration: 400, fill: 'forwards' });
+
+                setTimeout(() => {
+                    window.location.href = target;
+                }, 450);
             });
         });
 
-        // --- 4. BEAN FOLLOW LOGIC ---
+        // --- BEAN FOLLOW ---
         const bean = document.getElementById('floating-bean');
         let tX = 0, tY = 0, cX = 0, cY = 0;
         const move = (e) => {
@@ -228,6 +318,48 @@
             requestAnimationFrame(loop);
         }
         loop();
+
+
+    // --- FLOATING CART ADVANCED LOGIC ---
+const cartBtn = document.getElementById('cart-btn');
+
+// 1. Magnetic Attraction (Follows finger/mouse slightly)
+document.addEventListener('mousemove', (e) => {
+    const rect = cartBtn.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+
+    if (distance < 150) {
+        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+        const force = (150 - distance) / 15;
+        cartBtn.style.transform = `translate(${Math.cos(angle) * force}px, ${Math.sin(angle) * force}px) scale(1.1)`;
+    } else {
+        cartBtn.style.transform = `translate(0, 0) scale(1)`;
+    }
+});
+
+// 2. Click Transition
+cartBtn.addEventListener('click', function() {
+    confirmSfx.play();
+    
+    // Animate the icon
+    this.querySelector('.cart-wrapper').style.transform = 'scale(1.5) rotate(-20deg)';
+    
+    // Expand background to fill screen (Digital Tunnel)
+    this.animate([
+        { width: '65px', height: '65px', borderRadius: '50%' },
+        { width: '200vw', height: '200vw', borderRadius: '50%', background: 'var(--accent-gold)' }
+    ], {
+        duration: 600,
+        easing: 'ease-in',
+        fill: 'forwards'
+    });
+
+    setTimeout(() => {
+        window.location.href = "Cart.html";
+    }, 500);
+});
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BrewVerse Café | Immersive Experience</title>
+    <title>BrewVerse Café | Elite Digital Menu</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -12,72 +12,38 @@
             --accent-gold: #c9a66b;
             --glass-bg: rgba(15, 10, 5, 0.88);
             --ripple-color: rgba(201, 166, 107, 0.4);
+            --hologram-glow: rgba(201, 166, 107, 0.6);
         }
 
-        /* --- LOADING SCREEN --- */
+        /* --- 1. FLOATING 3D BEAN --- */
+        #floating-bean {
+            position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+            pointer-events: none; z-index: 10000; font-size: 2rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s linear; opacity: 0;
+        }
+        .bean-inner { animation: beanRotate 4s infinite linear; }
+        @keyframes beanRotate { from { transform: rotate3d(1,1,1,0deg); } to { transform: rotate3d(1,1,1,360deg); } }
+
+        /* --- 2. ADVANCED JS PRELOADER --- */
         #loader {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #0a0806;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #0a0806; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 9999;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1), visibility 1s;
         }
+        .cup-wrapper { position: relative; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
+        .spinning-cup { font-size: 5rem; color: var(--accent-gold); display: inline-block; will-change: transform, filter; }
+        .cup-aura { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(201, 166, 107, 0.15) 0%, transparent 70%); border-radius: 50%; z-index: -1; }
+        .loading-text { margin-top: 30px; font-family: 'Plus Jakarta Sans', sans-serif; color: #fff; letter-spacing: 8px; font-size: 0.75rem; text-transform: uppercase; }
+        .loader-hidden { opacity: 0; visibility: hidden; }
 
-        .loader-content {
-            text-align: center;
-        }
-
-        .spinning-cup {
-            font-size: 4rem;
-            color: var(--accent-gold);
-            display: inline-block;
-            animation: coffeeSpin 2s infinite ease-in-out;
-            filter: drop-shadow(0 0 15px rgba(201, 166, 107, 0.4));
-        }
-
-        .loading-text {
-            margin-top: 20px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #fff;
-            letter-spacing: 5px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            opacity: 0.8;
-            animation: pulseText 1.5s infinite;
-        }
-
-        @keyframes coffeeSpin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.2); }
-            100% { transform: rotate(360deg) scale(1); }
-        }
-
-        @keyframes pulseText {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
-        }
-
-        /* Hide loader class */
-        .loader-hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        /* --- MAIN UI --- */
+        /* --- 3. MAIN UI LAYOUT --- */
         body {
-            margin: 0; padding: 0;
-            min-height: 100vh;
+            margin: 0; padding: 0; min-height: 100vh;
             display: flex; flex-direction: column; align-items: center;
-            background-color: #000;
-            color: #fff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
-            padding-bottom: 90px;
+            background-color: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden; padding-bottom: 90px;
         }
 
         .bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
@@ -85,77 +51,130 @@
             width: 100%; height: 100%;
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), 
                         url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070');
-            background-size: cover;
-            animation: kenBurns 20s infinite alternate;
+            background-size: cover; animation: kenBurns 20s infinite alternate;
         }
+        @keyframes kenBurns { from { transform: scale(1.1); } to { transform: scale(1.25); } }
 
-        @keyframes kenBurns {
-            0% { transform: scale(1.1); }
-            100% { transform: scale(1.25); }
-        }
-
-        header { text-align: center; padding: 40px 20px; }
+        header { text-align: center; padding: 40px 20px; opacity: 0; transform: translateY(-20px); transition: 1s ease 0.5s; }
+        body.is-visible header { opacity: 1; transform: translateY(0); }
         h1 { font-family: 'Pacifico', cursive; font-size: 3rem; margin: 0; color: var(--accent-gold); }
 
+        /* --- 4. CATEGORY GRID --- */
         .category-grid { display: flex; flex-direction: column; gap: 15px; width: 92%; max-width: 400px; }
 
         .category-card {
-            position: relative;
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 22px;
-            display: flex; align-items: center; gap: 18px;
-            overflow: hidden;
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            -webkit-tap-highlight-color: transparent;
+            position: relative; background: var(--glass-bg); backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px;
+            padding: 22px; display: flex; align-items: center; gap: 18px;
+            overflow: hidden; opacity: 0; transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s, border-color 0.2s;
+            -webkit-tap-highlight-color: transparent; cursor: pointer;
         }
+        body.is-visible .category-card { opacity: 1; transform: scale(1); }
 
-        .category-card:active { transform: scale(0.94); border-color: var(--accent-gold); }
-
-        .ripple {
-            position: absolute;
-            background: var(--ripple-color);
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            border-radius: 50%;
-            animation: ripple-animation 0.6s linear;
+        .category-card.clicked {
+            animation: hologramFlash 0.4s ease-out forwards;
+            border-color: var(--accent-gold);
         }
-
-        @keyframes ripple-animation {
-            from { width: 0; height: 0; opacity: 1; }
-            to { width: 500px; height: 500px; opacity: 0; }
+        @keyframes hologramFlash {
+            0% { box-shadow: 0 0 0px var(--hologram-glow); background: var(--glass-bg); }
+            50% { box-shadow: 0 0 30px var(--hologram-glow); background: rgba(201, 166, 107, 0.2); }
+            100% { box-shadow: 0 0 0px var(--hologram-glow); background: var(--glass-bg); }
         }
 
         .icon-box {
-            width: 50px; height: 50px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 14px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.6rem; color: var(--accent-gold);
+            width: 50px; height: 50px; background: rgba(255,255,255,0.05);
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; color: var(--accent-gold); pointer-events: none;
         }
 
-        .category-name { font-weight: 800; font-size: 1.1rem; letter-spacing: 1px; }
+        .category-name { font-weight: 800; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; pointer-events: none; }
 
         .bottom-nav {
             position: fixed; bottom: 0; width: 100%; height: 75px;
             background: rgba(10,10,10,0.98); backdrop-filter: blur(20px);
             display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255,255,255,0.1); z-index: 100;
         }
         .nav-item { color: rgba(255,255,255,0.4); font-size: 1.4rem; display: flex; flex-direction: column; align-items: center; text-decoration: none; }
         .nav-item.active { color: var(--accent-gold); }
         .nav-label { font-size: 0.6rem; text-transform: uppercase; margin-top: 4px; }
 
+        /* --- ADVANCED FLOATING CART --- */
+.floating-cart {
+    position: fixed;
+    right: 20px;
+    bottom: 100px; /* Above the bottom nav */
+    width: 65px;
+    height: 65px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--accent-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6), inset 0 0 10px rgba(201, 166, 107, 0.2);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Reveal when page is visible */
+body.is-visible .floating-cart {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.cart-wrapper {
+    position: relative;
+    font-size: 1.8rem;
+    color: var(--accent-gold);
+    transition: transform 0.3s ease;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 900;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #000;
+}
+
+/* Breathing Animation */
+@keyframes cartPulse {
+    0% { box-shadow: 0 0 0 0 rgba(201, 166, 107, 0.4); transform: translateY(0); }
+    50% { box-shadow: 0 0 20px 10px rgba(201, 166, 107, 0); transform: translateY(-8px); }
+    100% { box-shadow: 0 0 0 0 rgba(201, 166, 107, 0); transform: translateY(0); }
+}
+
+.floating-cart {
+    animation: cartPulse 3s infinite ease-in-out;
+}
     </style>
 </head>
 <body>
 
+    <div id="floating-bean"><div class="bean-inner">🫘</div></div>
+
     <div id="loader">
         <div class="loader-content">
-            <div class="spinning-cup"><i class="bi bi-cup-hot"></i></div>
-            <div class="loading-text">Brewing Experience...</div>
+            <div class="cup-wrapper">
+                <div class="cup-aura" id="aura"></div>
+                <div class="spinning-cup" id="js-cup"><i class="bi bi-cup-hot"></i></div>
+            </div>
+            <div class="loading-text" id="loader-text">BREWING EXPERIENCE</div>
         </div>
     </div>
 
@@ -167,63 +186,180 @@
     </header>
 
     <div class="category-grid">
-        <div class="category-card" onclick="void(0)">
-            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
-            <span class="category-name">Starters</span>
-        </div>
-        <div class="category-card" onclick="void(0)">
-            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
-            <span class="category-name">Main Course</span>
-        </div>
-        <div class="category-card" onclick="void(0)">
-            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
-            <span class="category-name">Mocktails</span>
-        </div>
-        <div class="category-card" onclick="void(0)">
-            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
-            <span class="category-name">Hot Drinks</span>
-        </div>
-        <div class="category-card" onclick="void(0)">
-            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
-            <span class="category-name">Cold Drinks</span>
-        </div>
-        <div class="category-card" onclick="void(0)">
-            <div class="icon-box"><i class="bi bi-bootstrap"></i></div>
-            <span class="category-name">Desserts</span>
-        </div>
+        <div class="category-card" data-value="Starters"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
+        <div class="category-card" data-value="MainCourse"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
+        <div class="category-card" data-value="Mocktails"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
+        <div class="category-card" data-value="HotDrinks"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
+        <div class="category-card" data-value="ColdDrinks"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
+        <div class="category-card" data-value="Desserts"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
     </div>
 
+    
+
+<div class="floating-cart" id="cart-btn">
+    <div class="cart-wrapper">
+        <i class="bi bi-cart3"></i>
+        <span class="cart-badge" id="cart-count">0</span>
+    </div>
+</div>
 
     <script>
-        // --- PRELOADER LOGIC ---
-        window.addEventListener('load', () => {
+        // --- TEXT SCRAMBLE LOGIC ---
+        class TextScramble {
+            constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = ''; let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) { complete++; output += to; }
+                    else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) { char = this.randomChar(); this.queue[i].char = char; }
+                        output += `<span style="color:var(--accent-gold)">${char}</span>`;
+                    } else { output += from; }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) { this.resolve(); }
+                else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
+            }
+            randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
+        }
+
+        const confirmSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+        const decodeSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2567/2567-preview.mp3');
+        confirmSfx.volume = 0.5; decodeSfx.volume = 0.2;
+
+        const cup = document.getElementById('js-cup');
+        const aura = document.getElementById('aura');
+        cup.animate([
+            { transform: 'rotateY(0deg) rotateX(0deg) translateY(0px)' },
+            { transform: 'rotateY(180deg) rotateX(15deg) translateY(-15px)' },
+            { transform: 'rotateY(360deg) rotateX(0deg) translateY(0px)' }
+        ], { duration: 3000, iterations: Infinity, easing: 'cubic-bezier(0.45, 0.05, 0.55, 0.95)' });
+        aura.animate([{ transform: 'scale(0.8)', opacity: 0.3 }, { transform: 'scale(1.4)', opacity: 0.8 }, { transform: 'scale(0.8)', opacity: 0.3 }], 
+        { duration: 2000, iterations: Infinity, easing: 'ease-in-out' });
+
+        // --- BACK BUTTON FIX & INITIALIZATION ---
+        function init() {
             const loader = document.getElementById('loader');
-            // Wait for 2 seconds (2000ms) then hide
+            const cards = document.querySelectorAll('.category-card');
+            
+            document.body.classList.remove('is-visible');
+            loader.classList.remove('loader-hidden');
+
             setTimeout(() => {
                 loader.classList.add('loader-hidden');
+                document.body.classList.add('is-visible');
+                
+                cards.forEach((card, i) => {
+                    card.classList.remove('clicked');
+                    const el = card.querySelector('.category-name');
+                    const fx = new TextScramble(el);
+                    setTimeout(() => {
+                        decodeSfx.play().catch(() => {});
+                        let displayValue = card.dataset.value.replace(/([A-Z])/g, ' $1').trim();
+                        fx.setText(displayValue);
+                    }, 500 + (i * 150));
+                });
             }, 2000);
-        });
+        }
 
-        // --- INTERACTION LOGIC ---
-        const clickSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
-        clickSfx.volume = 0.4;
+        window.addEventListener('pageshow', (event) => { init(); });
 
-        document.querySelectorAll('.category-grid .category-card').forEach(card => {
-            card.addEventListener('touchstart', function(e) {
-                clickSfx.currentTime = 0;
-                clickSfx.play().catch(() => {});
+        // --- ROBUST NAVIGATION ---
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                confirmSfx.currentTime = 0; confirmSfx.play().catch(() => {});
+                this.classList.add('clicked');
+                
+                const target = this.getAttribute('data-value') + ".html";
 
-                const ripple = document.createElement('span');
-                ripple.classList.add('ripple');
-                const rect = card.getBoundingClientRect();
-                const x = e.touches[0].clientX - rect.left;
-                const y = e.touches[0].clientY - rect.top;
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                this.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 600);
+                // Animation exit
+                this.animate([
+                    { transform: 'scale(1)', opacity: 1 },
+                    { transform: 'scale(1.3)', opacity: 0 }
+                ], { duration: 400, fill: 'forwards' });
+
+                setTimeout(() => {
+                    window.location.href = target;
+                }, 450);
             });
         });
+
+        // --- BEAN FOLLOW ---
+        const bean = document.getElementById('floating-bean');
+        let tX = 0, tY = 0, cX = 0, cY = 0;
+        const move = (e) => {
+            bean.style.opacity = "1";
+            tX = e.touches ? e.touches[0].clientX : e.clientX;
+            tY = e.touches ? e.touches[0].clientY : e.clientY;
+        };
+        document.addEventListener('mousemove', move);
+        document.addEventListener('touchmove', move, {passive: false});
+        function loop() {
+            cX += (tX - cX) * 0.1; cY += (tY - cY) * 0.1;
+            bean.style.transform = `translate3d(${cX-20}px, ${cY-20}px, 0)`;
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+
+    // --- FLOATING CART ADVANCED LOGIC ---
+const cartBtn = document.getElementById('cart-btn');
+
+// 1. Magnetic Attraction (Follows finger/mouse slightly)
+document.addEventListener('mousemove', (e) => {
+    const rect = cartBtn.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+
+    if (distance < 150) {
+        const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+        const force = (150 - distance) / 15;
+        cartBtn.style.transform = `translate(${Math.cos(angle) * force}px, ${Math.sin(angle) * force}px) scale(1.1)`;
+    } else {
+        cartBtn.style.transform = `translate(0, 0) scale(1)`;
+    }
+});
+
+// 2. Click Transition
+cartBtn.addEventListener('click', function() {
+    confirmSfx.play();
+    
+    // Animate the icon
+    this.querySelector('.cart-wrapper').style.transform = 'scale(1.5) rotate(-20deg)';
+    
+    // Expand background to fill screen (Digital Tunnel)
+    this.animate([
+        { width: '65px', height: '65px', borderRadius: '50%' },
+        { width: '200vw', height: '200vw', borderRadius: '50%', background: 'var(--accent-gold)' }
+    ], {
+        duration: 600,
+        easing: 'ease-in',
+        fill: 'forwards'
+    });
+
+    setTimeout(() => {
+        window.location.href = "Cart.html";
+    }, 500);
+});
     </script>
 </body>
 </html>
