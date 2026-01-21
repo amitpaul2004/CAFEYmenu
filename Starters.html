@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Starters | BrewVerse Pro</title>
+    <title>Starters | BrewVerse Elite</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -28,55 +28,64 @@
             background-size: cover; filter: blur(12px); transform: scale(1.1);
         }
 
-        /* --- HEADER & GO BACK --- */
+        /* --- HEADER & SEARCH --- */
         .header { 
-            padding: 50px 20px 20px; position: sticky; top: 0; z-index: 100; 
+            padding: 40px 20px 20px; position: sticky; top: 0; z-index: 100; 
             background: rgba(0,0,0,0.7); backdrop-filter: blur(25px); 
-            display: flex; align-items: center; justify-content: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .go-back-wrapper { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); }
+        .nav-top { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 15px; }
+        .go-back-wrapper { position: absolute; left: 0; }
         .back-btn-elite {
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 45px; height: 45px; border-radius: 50%;
             background: rgba(255,255,255,0.05); border: 1px solid rgba(201, 166, 107, 0.3);
             display: flex; align-items: center; justify-content: center;
-            color: var(--accent-gold); font-size: 1.5rem; text-decoration: none;
+            color: var(--accent-gold); font-size: 1.3rem; text-decoration: none;
         }
-        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2.2rem; color: var(--accent-gold); }
+        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2rem; color: var(--accent-gold); }
+
+        .search-container { padding: 0 5px; }
+        .search-box {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; padding: 12px 18px; display: flex; align-items: center; gap: 12px;
+            transition: 0.3s ease;
+        }
+        .search-box:focus-within { border-color: var(--accent-gold); box-shadow: 0 0 15px var(--gold-glow); }
+        .search-box input { background: none; border: none; color: #fff; width: 100%; outline: none; font-size: 1rem; }
 
         /* --- MENU ITEMS --- */
-        .menu-container { padding: 25px 20px 120px; display: flex; flex-direction: column; gap: 20px; }
+        .menu-container { padding: 20px 20px 120px; display: flex; flex-direction: column; gap: 20px; }
         
         .food-item {
             background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 30px; padding: 15px; display: flex; align-items: center; gap: 18px;
-            transition: 0.4s ease;
+            border-radius: 30px; padding: 15px; display: flex; align-items: center; gap: 15px;
+            transform: translateY(20px); opacity: 0; transition: 0.5s cubic-bezier(0.2, 1, 0.2, 1);
         }
+        .food-item.reveal { transform: translateY(0); opacity: 1; }
 
         .item-thumb { 
-            width: 80px; height: 80px; border-radius: 20px; object-fit: cover; 
+            width: 75px; height: 75px; border-radius: 18px; object-fit: cover; 
             border: 2px solid var(--accent-gold); cursor: zoom-in; 
-            transition: transform 0.3s ease;
         }
-        .item-thumb:active { transform: scale(0.9); }
 
         .item-info { flex-grow: 1; }
-        .item-name { font-weight: 800; font-size: 1.05rem; margin-bottom: 4px; }
+        .item-name { font-weight: 800; font-size: 1rem; margin-bottom: 3px; }
         .item-price { color: var(--accent-gold); font-weight: 800; }
 
         /* --- QUANTITY CONTROLLER --- */
         .qty-wrapper {
             display: flex; align-items: center; background: #fff; border-radius: 12px;
-            min-width: 45px; height: 45px; justify-content: center; transition: 0.3s ease;
+            min-width: 42px; height: 42px; justify-content: center; transition: 0.3s ease;
         }
-        .qty-wrapper.active { min-width: 110px; }
-        .qty-btn { background: none; border: none; color: #000; width: 35px; height: 45px; font-size: 1.2rem; font-weight: 800; display: none; }
+        .qty-wrapper.active { min-width: 100px; }
+        .qty-btn { background: none; border: none; color: #000; width: 30px; height: 42px; font-size: 1.2rem; font-weight: 800; display: none; }
         .qty-wrapper.active .qty-btn { display: block; }
-        .qty-val { color: #000; font-weight: 800; display: none; padding: 0 5px; }
-        .qty-wrapper.active .qty-val { display: block; }
-        .add-initial { color: #000; font-size: 1.6rem; font-weight: 800; cursor: pointer; }
+        .qty-val { color: #000; font-weight: 800; display: none; }
+        .qty-wrapper.active .qty-val { display: block; flex-grow: 1; text-align: center; }
+        .add-initial { color: #000; font-size: 1.5rem; font-weight: 800; cursor: pointer; }
         .qty-wrapper.active .add-initial { display: none; }
 
-        /* --- PHOTO POPUP (MODAL) --- */
+        /* --- PHOTO MODAL --- */
         .img-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
@@ -84,20 +93,19 @@
             z-index: 2000; opacity: 0; visibility: hidden; transition: 0.4s ease;
         }
         .img-modal.active { opacity: 1; visibility: visible; }
-        .modal-content { width: 85%; max-width: 400px; text-align: center; transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .img-modal.active .modal-content { transform: scale(1); }
-        .modal-content img { width: 100%; border-radius: 30px; border: 1px solid var(--accent-gold); box-shadow: 0 0 30px var(--gold-glow); }
+        .modal-content { width: 85%; max-width: 400px; text-align: center; }
+        .modal-content img { width: 100%; border-radius: 30px; border: 1px solid var(--accent-gold); }
         .modal-name { font-family: 'Pacifico', cursive; color: var(--accent-gold); font-size: 1.8rem; margin-top: 15px; }
 
         /* --- FLOATING CART --- */
         #floating-cart {
-            position: fixed; bottom: 30px; right: 25px; width: 70px; height: 70px; border-radius: 50%;
+            position: fixed; bottom: 30px; right: 25px; width: 65px; height: 65px; border-radius: 50%;
             background: var(--accent-gold); color: #000; display: flex; align-items: center; justify-content: center;
-            font-size: 1.8rem; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            font-size: 1.6rem; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             transform: scale(0); transition: 0.4s; text-decoration: none;
         }
         #floating-cart.visible { transform: scale(1); }
-        .badge { position: absolute; top: 0; right: 0; background: #fff; min-width: 22px; height: 22px; border-radius: 11px; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-gold); }
+        .badge { position: absolute; top: 0; right: 0; background: #fff; min-width: 20px; height: 20px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-gold); }
     </style>
 </head>
 <body>
@@ -113,16 +121,23 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <img id="fullImg" src="" alt="Preview">
             <div class="modal-name" id="modalName"></div>
-            <div>SCAN TO SEE A LARGER VIEW</div>
-            <button onclick="document.getElementById('imgModal').classList.remove('active')" style="background:var(--accent-gold); border:none; color:#000; padding:10px 30px; border-radius:15px; margin-top:20px; font-weight:800;">CLOSE</button>
+            <button onclick="document.getElementById('imgModal').classList.remove('active')" style="background:var(--accent-gold); border:none; color:#000; padding:10px 25px; border-radius:12px; margin-top:20px; font-weight:800;">CLOSE</button>
         </div>
     </div>
 
     <div class="header">
-        <div class="go-back-wrapper">
-            <a href="index.html" class="back-btn-elite"><i class="bi bi-chevron-left"></i></a>
+        <div class="nav-top">
+            <div class="go-back-wrapper">
+                <a href="index.html" class="back-btn-elite"><i class="bi bi-chevron-left"></i></a>
+            </div>
+            <h1>Starters</h1>
         </div>
-        <h1>Starters</h1>
+        <div class="search-container">
+            <div class="search-box">
+                <i class="bi bi-search" style="color: var(--accent-gold);"></i>
+                <input type="text" id="searchInput" placeholder="Search for appetizers...">
+            </div>
+        </div>
     </div>
 
     <div class="menu-container" id="menuList"></div>
@@ -152,10 +167,12 @@
 
         let cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
 
-        function render() {
+        function render(filter = "") {
             const list = document.getElementById('menuList');
             list.innerHTML = "";
-            starterData.forEach(item => {
+            const filtered = starterData.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
+
+            filtered.forEach((item, i) => {
                 const qty = cart[item.id] ? cart[item.id].quantity : 0;
                 const active = qty > 0 ? 'active' : '';
                 const div = document.createElement('div');
@@ -174,6 +191,7 @@
                     </div>
                 `;
                 list.appendChild(div);
+                setTimeout(() => div.classList.add('reveal'), i * 50);
             });
             updateCartUI();
         }
@@ -182,7 +200,6 @@
             document.getElementById('fullImg').src = src;
             document.getElementById('modalName').innerText = name;
             document.getElementById('imgModal').classList.add('active');
-            if(navigator.vibrate) navigator.vibrate(20);
         }
 
         function updateQty(id, change) {
@@ -200,7 +217,6 @@
             }
             localStorage.setItem('brewverse_cart', JSON.stringify(cart));
             updateCartUI();
-            if(navigator.vibrate) navigator.vibrate(40);
         }
 
         function updateCartUI() {
@@ -210,7 +226,8 @@
             count > 0 ? fab.classList.add('visible') : fab.classList.remove('visible');
         }
 
-        window.onload = render;
+        document.getElementById('searchInput').addEventListener('input', (e) => render(e.target.value));
+        window.onload = () => render();
     </script>
 </body>
 </html>
