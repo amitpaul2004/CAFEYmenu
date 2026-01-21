@@ -138,147 +138,158 @@
     </nav>
 
     <script>
-        // --- 1. CORE ENGINES ---
-        class TextScramble {
-            constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
-            setText(newText) {
-                const oldText = this.el.innerText;
-                const length = Math.max(oldText.length, newText.length);
-                const promise = new Promise((resolve) => this.resolve = resolve);
-                this.queue = [];
-                for (let i = 0; i < length; i++) {
-                    const from = oldText[i] || '';
-                    const to = newText[i] || '';
-                    const start = Math.floor(Math.random() * 40);
-                    const end = start + Math.floor(Math.random() * 40);
-                    this.queue.push({ from, to, start, end });
-                }
-                cancelAnimationFrame(this.frameRequest);
-                this.frame = 0;
-                this.update();
-                return promise;
-            }
-            update() {
-                let output = ''; let complete = 0;
-                for (let i = 0, n = this.queue.length; i < n; i++) {
-                    let { from, to, start, end, char } = this.queue[i];
-                    if (this.frame >= end) { complete++; output += to; }
-                    else if (this.frame >= start) {
-                        if (!char || Math.random() < 0.28) { char = this.randomChar(); this.queue[i].char = char; }
-                        output += `<span style="color:var(--accent-gold)">${char}</span>`;
-                    } else { output += from; }
-                }
-                this.el.innerHTML = output;
-                if (complete === this.queue.length) { this.resolve(); }
-                else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
-            }
-            randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
+        // --- 1. TEXT SCRAMBLE ENGINE ---
+class TextScramble {
+    constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
+    setText(newText) {
+        const oldText = this.el.innerText;
+        const length = Math.max(oldText.length, newText.length);
+        const promise = new Promise((resolve) => this.resolve = resolve);
+        this.queue = [];
+        for (let i = 0; i < length; i++) {
+            const from = oldText[i] || '';
+            const to = newText[i] || '';
+            const start = Math.floor(Math.random() * 40);
+            const end = start + Math.floor(Math.random() * 40);
+            this.queue.push({ from, to, start, end });
         }
+        cancelAnimationFrame(this.frameRequest);
+        this.frame = 0;
+        this.update();
+        return promise;
+    }
+    update() {
+        let output = ''; let complete = 0;
+        for (let i = 0, n = this.queue.length; i < n; i++) {
+            let { from, to, start, end, char } = this.queue[i];
+            if (this.frame >= end) { complete++; output += to; }
+            else if (this.frame >= start) {
+                if (!char || Math.random() < 0.28) { char = this.randomChar(); this.queue[i].char = char; }
+                output += `<span style="color:var(--accent-gold)">${char}</span>`;
+            } else { output += from; }
+        }
+        this.el.innerHTML = output;
+        if (complete === this.queue.length) { this.resolve(); }
+        else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
+    }
+    randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
+}
 
-        const confirmSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
-        const decodeSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2567/2567-preview.mp3');
-        confirmSfx.volume = 0.5; decodeSfx.volume = 0.2;
+// --- 2. ASSETS & ANIMATIONS ---
+const confirmSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+const decodeSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2567/2567-preview.mp3');
+confirmSfx.volume = 0.5; decodeSfx.volume = 0.2;
 
-        const cup = document.getElementById('js-cup');
-        const aura = document.getElementById('aura');
+const cup = document.getElementById('js-cup');
+const aura = document.getElementById('aura');
 
-        // --- 2. MASTER INITIALIZATION ---
-        function refreshAndShowMenu() {
-            const loader = document.getElementById('loader');
-            const cards = document.querySelectorAll('.category-card');
+// --- 3. MASTER INITIALIZATION (The Fix) ---
+function refreshAndShowMenu() {
+    const loader = document.getElementById('loader');
+    const cards = document.querySelectorAll('.category-card');
+    const header = document.querySelector('header');
+    const bottomNav = document.querySelector('.bottom-nav');
+    
+    // HARD RESET: Ensure everything is hidden before re-animating
+    document.body.classList.remove('is-visible');
+    loader.classList.remove('loader-hidden');
+    header.style.opacity = '0';
+    header.style.transform = 'translateY(-20px)';
+    bottomNav.style.transform = 'translateY(0)';
+
+    // Cup Buoyancy Logic
+    cup.animate([
+        { transform: 'rotateY(0deg) rotateX(0deg) translateY(0px)' },
+        { transform: 'rotateY(180deg) rotateX(20deg) translateY(-20px)' },
+        { transform: 'rotateY(360deg) rotateX(0deg) translateY(0px)' }
+    ], { duration: 3000, iterations: Infinity, easing: 'ease-in-out' });
+
+    aura.animate([
+        { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' },
+        { opacity: 0.6, transform: 'translate(-50%, -50%) scale(1.3)' },
+        { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' }
+    ], { duration: 2000, iterations: Infinity, easing: 'ease-in-out' });
+
+    setTimeout(() => {
+        loader.classList.add('loader-hidden');
+        document.body.classList.add('is-visible');
+        header.style.opacity = '1';
+        header.style.transform = 'translateY(0)';
+        
+        cards.forEach((card, i) => {
+            card.classList.remove('clicked');
+            card.style.zIndex = "1";
+            card.style.opacity = "1"; // Force reveal
             
-            // Reset states for "Back" button support
-            document.body.classList.remove('is-visible');
-            loader.classList.remove('loader-hidden');
-            document.querySelector('header').style.opacity = '0';
-            document.querySelector('.bottom-nav').style.transform = 'translateY(0)';
-
-            // Re-animate Cup
-            cup.animate([
-                { transform: 'rotateY(0deg) rotateX(0deg) translateY(0px)' },
-                { transform: 'rotateY(180deg) rotateX(20deg) translateY(-20px)' },
-                { transform: 'rotateY(360deg) rotateX(0deg) translateY(0px)' }
-            ], { duration: 3000, iterations: Infinity, easing: 'ease-in-out' });
-
-            aura.animate([
-                { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' },
-                { opacity: 0.6, transform: 'translate(-50%, -50%) scale(1.3)' },
-                { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' }
-            ], { duration: 2000, iterations: Infinity, easing: 'ease-in-out' });
-
+            const el = card.querySelector('.category-name');
+            const fx = new TextScramble(el);
+            
             setTimeout(() => {
-                loader.classList.add('loader-hidden');
-                document.body.classList.add('is-visible');
-                
-                cards.forEach((card, i) => {
-                    card.classList.remove('clicked');
-                    card.style.zIndex = "1"; // Reset tunnel effect
-                    const el = card.querySelector('.category-name');
-                    const fx = new TextScramble(el);
-                    
-                    setTimeout(() => {
-                        decodeSfx.play().catch(() => {});
-                        let name = card.dataset.value.replace(/([A-Z])/g, ' $1').trim();
-                        fx.setText(name);
-                    }, 500 + (i * 150));
-                });
-            }, 2000);
-        }
-
-        // --- 3. EVENT LISTENERS ---
-        window.addEventListener('pageshow', (event) => {
-            refreshAndShowMenu();
+                decodeSfx.play().catch(() => {});
+                let name = card.dataset.value.replace(/([A-Z])/g, ' $1').trim();
+                fx.setText(name);
+            }, 500 + (i * 150));
         });
+    }, 2000);
+}
 
-        // Navigation & Tunnel Animation
-        document.querySelectorAll('.category-card').forEach(card => {
-            card.addEventListener('click', function() {
-                confirmSfx.currentTime = 0;
-                confirmSfx.play().catch(() => {});
-                this.classList.add('clicked');
+// --- 4. EVENT LISTENERS ---
 
-                // Tunnel Effect
-                this.style.zIndex = "1000";
-                this.animate([
-                    { transform: 'scale(1)', filter: 'brightness(1) blur(0px)' },
-                    { transform: 'scale(10)', filter: 'brightness(3) blur(15px)', opacity: 0 }
-                ], { duration: 700, easing: 'cubic-bezier(0.7, 0, 0.3, 1)', fill: 'forwards' });
+// Triggers on Back Button correctly
+window.addEventListener('pageshow', (event) => {
+    refreshAndShowMenu();
+});
 
-                document.querySelector('header').style.opacity = '0';
-                document.querySelector('.bottom-nav').style.transform = 'translateY(100px)';
+// Category Navigation with Tunnel Effect
+document.querySelectorAll('.category-card').forEach(card => {
+    card.addEventListener('click', function() {
+        confirmSfx.currentTime = 0;
+        confirmSfx.play().catch(() => {});
+        this.classList.add('clicked');
 
-                setTimeout(() => {
-                    window.location.href = this.dataset.value + ".html";
-                }, 650);
-            });
-        });
+        this.style.zIndex = "1000";
+        this.animate([
+            { transform: 'scale(1)', filter: 'brightness(1) blur(0px)' },
+            { transform: 'scale(10)', filter: 'brightness(3) blur(15px)', opacity: 0 }
+        ], { duration: 700, easing: 'cubic-bezier(0.7, 0, 0.3, 1)', fill: 'forwards' });
 
-        // Cart Burst Animation
-        document.getElementById('cart-btn').addEventListener('click', function() {
-            confirmSfx.play().catch(() => {});
-            const burst = document.createElement('div');
-            burst.style.cssText = `position:fixed; top:${this.getBoundingClientRect().top + 32}px; left:${this.getBoundingClientRect().left + 32}px; width:10px; height:10px; background:var(--accent-gold); border-radius:50%; z-index:10000; pointer-events:none;`;
-            document.body.appendChild(burst);
-            burst.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(300)', opacity: 1 }], { duration: 600, easing: 'ease-in' });
-            setTimeout(() => { window.location.href = "Cart.html"; }, 500);
-        });
+        document.querySelector('header').style.opacity = '0';
+        document.querySelector('.bottom-nav').style.transform = 'translateY(100px)';
 
-        // Bean Follower
-        const bean = document.getElementById('floating-bean');
-        let tX = 0, tY = 0, cX = 0, cY = 0;
-        const move = (e) => {
-            bean.style.opacity = "1";
-            tX = e.touches ? e.touches[0].clientX : e.clientX;
-            tY = e.touches ? e.touches[0].clientY : e.clientY;
-        };
-        document.addEventListener('mousemove', move);
-        document.addEventListener('touchmove', move);
-        function loop() {
-            cX += (tX - cX) * 0.1; cY += (tY - cY) * 0.1;
-            bean.style.transform = `translate3d(${cX-20}px, ${cY-20}px, 0)`;
-            requestAnimationFrame(loop);
-        }
-        loop();
+        setTimeout(() => {
+            window.location.href = this.dataset.value + ".html";
+        }, 650);
+    });
+});
+
+// Cart Burst Animation
+document.getElementById('cart-btn').addEventListener('click', function() {
+    confirmSfx.play().catch(() => {});
+    const burst = document.createElement('div');
+    burst.style.cssText = `position:fixed; top:${this.getBoundingClientRect().top + 32}px; left:${this.getBoundingClientRect().left + 32}px; width:10px; height:10px; background:var(--accent-gold); border-radius:50%; z-index:10000; pointer-events:none;`;
+    document.body.appendChild(burst);
+    burst.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(300)', opacity: 1 }], { duration: 600, easing: 'ease-in' });
+    setTimeout(() => { window.location.href = "Cart.html"; }, 500);
+});
+
+// Magnetic Bean Follower
+const bean = document.getElementById('floating-bean');
+let tX = 0, tY = 0, cX = 0, cY = 0;
+const move = (e) => {
+    bean.style.opacity = "1";
+    tX = e.touches ? e.touches[0].clientX : e.clientX;
+    tY = e.touches ? e.touches[0].clientY : e.clientY;
+};
+document.addEventListener('mousemove', move);
+document.addEventListener('touchmove', move);
+
+function loop() {
+    cX += (tX - cX) * 0.1;
+    cY += (tY - cY) * 0.1;
+    bean.style.transform = `translate3d(${cX-20}px, ${cY-20}px, 0)`;
+    requestAnimationFrame(loop);
+}
+loop();
     </script>
 </body>
 </html>
