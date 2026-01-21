@@ -3,143 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Starters | BrewVerse</title>
+    <title>Starters | BrewVerse Café</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --gold: #c9a66b; --glass: rgba(15, 10, 5, 0.9); }
-        body { 
-            margin: 0; background: #000; color: #fff; 
-            font-family: 'Plus Jakarta Sans', sans-serif; opacity: 0; 
-            transition: opacity 0.8s ease;
+        :root {
+            --accent-gold: #c9a66b;
+            --glass-bg: rgba(15, 10, 5, 0.92);
         }
-        .page-visible { opacity: 1; }
 
-        /* Header Animation */
-        .header {
-            padding: 30px 20px; display: flex; align-items: center; justify-content: space-between;
-            transform: translateY(-20px); opacity: 0; transition: 0.8s ease 0.2s;
+        body {
+            margin: 0; background: #000; color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden; opacity: 0; transition: opacity 0.8s ease;
         }
-        .reveal .header { transform: translateY(0); opacity: 1; }
+        body.page-loaded { opacity: 1; }
 
-        /* Staggered Item List */
-        .menu-item {
-            background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-            margin: 10px 20px; padding: 15px; border-radius: 20px;
-            display: flex; align-items: center; gap: 15px;
-            transform: translateX(30px); opacity: 0;
-            transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        .bg-fixed {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), 
+            url('https://images.unsplash.com/photo-1541544741938-0af808871cc0?q=80&w=2069');
+            background-size: cover; filter: blur(10px); transform: scale(1.1);
         }
-        .menu-item.active { transform: translateX(0); opacity: 1; }
 
-        .add-btn { background: var(--gold); border: none; padding: 8px 15px; border-radius: 10px; font-weight: 800; }
-    /* Swipe-to-back visual feedback overlay */
-.swipe-indicator {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 10px;
-    height: 100%;
-    background: linear-gradient(to right, var(--accent-gold), transparent);
-    opacity: 0;
-    z-index: 10001;
-    pointer-events: none;
-    transition: opacity 0.2s;
-}
+        .header { 
+            padding: 30px 20px 10px; position: sticky; top: 0; z-index: 100; 
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(15px); 
+        }
+        .nav-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2.2rem; color: var(--accent-gold); }
 
-/* Optional: Add a slight slide-out animation for the whole body */
-body.swiping-out {
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
-    transform: translateX(100%);
-    opacity: 0;
-}
+        .search-box {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px; padding: 12px 18px; display: flex; align-items: center; gap: 12px;
+        }
+        .search-box input { background: none; border: none; color: #fff; width: 100%; outline: none; font-size: 1rem; }
+
+        .menu-container { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+
+        .food-item {
+            background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 22px; padding: 12px 15px; display: flex; align-items: center; gap: 15px;
+            transform: translateX(40px); opacity: 0; transition: 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .food-item.reveal { transform: translateX(0); opacity: 1; }
+
+        /* Clickable Thumbnail */
+        .item-thumb {
+            width: 70px; height: 70px; border-radius: 16px; object-fit: cover;
+            border: 1px solid rgba(255,255,255,0.1); flex-shrink: 0;
+            cursor: zoom-in; transition: 0.3s;
+        }
+        .item-thumb:active { transform: scale(0.95); }
+
+        .item-info { flex-grow: 1; }
+        .item-name { font-weight: 800; font-size: 1.05rem; margin-bottom: 3px; }
+        .item-price { color: var(--accent-gold); font-weight: 500; }
+
+        .add-btn {
+            background: var(--accent-gold); border: none; color: #000;
+            width: 40px; height: 40px; border-radius: 12px;
+            font-size: 1.5rem; font-weight: 800; cursor: pointer;
+        }
+
+        /* --- IMAGE MODAL --- */
+        .img-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 2000; opacity: 0; visibility: hidden; transition: 0.4s ease;
+        }
+        .img-modal.active { opacity: 1; visibility: visible; }
+        
+        .modal-content {
+            width: 85%; max-width: 400px; text-align: center;
+            transform: scale(0.8); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .img-modal.active .modal-content { transform: scale(1); }
+
+        .modal-content img {
+            width: 100%; border-radius: 30px; border: 1px solid var(--accent-gold);
+            box-shadow: 0 0 30px rgba(201, 166, 107, 0.3);
+        }
+        .modal-title { font-family: 'Pacifico', cursive; color: var(--accent-gold); font-size: 1.8rem; margin-top: 15px; }
+
+        .swipe-indicator { position: fixed; top: 0; left: 0; width: 10px; height: 100%; background: linear-gradient(to right, var(--accent-gold), transparent); opacity: 0; z-index: 10001; pointer-events: none; }
+        body.swiping-out { transform: translateX(100%); opacity: 0; transition: 0.4s ease-out; }
     </style>
 </head>
 <body>
+
+    <div class="bg-fixed"></div>
+
     <div class="header">
-        <a href="index.html" style="color:var(--gold); font-size: 1.5rem;"><i class="bi bi-chevron-left"></i></a>
-        <h1 style="font-family:'Pacifico'; margin:0;">Starters</h1>
-        <i class="bi bi-search" style="font-size: 1.3rem;"></i>
+        <div class="nav-top">
+            <a href="index.html" style="color:var(--accent-gold); font-size:1.8rem;"><i class="bi bi-arrow-left-circle"></i></a>
+            <h1>Starters</h1>
+            <div style="width: 30px;"></div>
+        </div>
+        <div class="search-box">
+            <i class="bi bi-search" style="color: var(--accent-gold);"></i>
+            <input type="text" id="searchInput" placeholder="Search delicious starters...">
+        </div>
     </div>
 
-    <div class="item-list">
-        <div class="menu-item">
-            <div style="width:60px; height:60px; background:#222; border-radius:12px;"></div>
-            <div style="flex-grow:1;">
-                <div style="font-weight:800;">Crispy Corn</div>
-                <div style="color:var(--gold);">₹180</div>
-            </div>
-            <button class="add-btn">ADD</button>
+    <div class="menu-container" id="menuList"></div>
+
+    <div class="img-modal" id="imgModal" onclick="closeImg()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="fullImg" src="" alt="Food Preview">
+            <div class="modal-title" id="fullTitle"></div>
+           <div>SCAN TO SEE A LARGER VIEW</div> 
+            <button onclick="closeImg()" style="background:none; border:1px solid #444; color:#fff; padding:10px 30px; border-radius:15px; margin-top:20px; font-weight:800;">CLOSE</button>
         </div>
-        </div>
+    </div>
 
     <script>
-        window.addEventListener('load', () => {
-            document.body.classList.add('page-visible');
-            document.body.classList.add('reveal');
-            
-            const items = document.querySelectorAll('.menu-item');
-            items.forEach((item, i) => {
-                setTimeout(() => item.classList.add('active'), 400 + (i * 100));
+        const starterData = [
+            { name: "Crispy French Fries", price: 99, food: "fries.png" },
+            { name: "Peri-Peri Fries", price: 119, food: "peri_fries.jpg" },
+            { name: "Cheese Garlic Bread", price: 129, food: "cgb.jpg" },
+            { name: "Stuffed Garlic Bread", price: 149, food: "sgb.jpg" },
+            { name: "Veg Nuggets", price: 129, food: "nuggets.jpg" },
+            { name: "Cheese Corn Balls", price: 139, food: "cornballs.jpg" },
+            { name: "Paneer Tikka (Café Style)", price: 199, food: "tikka.jpg" },
+            { name: "Chilli Mushroom", price: 179, food: "mushroom.jpg" },
+            { name: "Loaded Nachos", price: 189, food: "nachos.jpg" },
+            { name: "Masala Fries", price: 109, food: "masala_fries.jpg" },
+            { name: "Cheesy Fries", price: 149, food: "cheesy_fries.jpg" },
+            { name: "Honey Chilli Potato", price: 169, food: "hcp.jpg" },
+            { name: "Crispy Veg Spring Rolls", price: 159, food: "rolls.jpg" },
+            { name: "Paneer Pakora", price: 149, food: "pakora.jpg" },
+            { name: "Cheese Chilli Toast", price: 139, food: "toast.jpg" },
+            { name: "Veg Momos (Steam/Fried)", price: 149, food: "momos.jpg" },
+            { name: "Paneer Popcorn", price: 169, food: "popcorn.jpg" },
+            { name: "Corn Cheese Toast", price: 129, food: "cct.jpg" },
+            { name: "Café Special Platter", price: 249, food: "platter.jpg" }
+        ];
+
+        function render(filter = "") {
+            const list = document.getElementById('menuList');
+            list.innerHTML = "";
+            const filtered = starterData.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
+
+            filtered.forEach((item, i) => {
+                const card = document.createElement('div');
+                card.className = 'food-item';
+                card.innerHTML = `
+                    <img src="images/${item.food}" class="item-thumb" onclick="openImg('images/${item.food}', '${item.name}')" onerror="this.src='https://via.placeholder.com/100?text=Food'">
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-price">₹${item.price}</div>
+                    </div>
+                    <button class="add-btn">+</button>
+                `;
+                list.appendChild(card);
+                setTimeout(() => card.classList.add('reveal'), 100 + (i * 60));
             });
+        }
+
+        // --- IMAGE MODAL LOGIC ---
+        function openImg(src, name) {
+            document.getElementById('fullImg').src = src;
+            document.getElementById('fullTitle').innerText = name;
+            document.getElementById('imgModal').classList.add('active');
+        }
+
+        function closeImg() {
+            document.getElementById('imgModal').classList.remove('active');
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => render(e.target.value));
+        window.addEventListener('load', () => { document.body.classList.add('page-loaded'); render(); });
+
+        // --- SWIPE LOGIC ---
+        let startX = 0;
+        const indicator = document.createElement('div');
+        indicator.className = 'swipe-indicator';
+        document.body.appendChild(indicator);
+
+        document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
+        document.addEventListener('touchmove', e => {
+            let dist = e.touches[0].clientX - startX;
+            if (startX < 50 && dist > 0) {
+                indicator.style.opacity = Math.min(dist / 200, 0.6);
+                indicator.style.width = (dist / 3) + 'px';
+            }
+        }, {passive:true});
+        document.addEventListener('touchend', e => {
+            let dist = e.changedTouches[0].clientX - startX;
+            if (startX < 50 && dist > 120) {
+                document.body.classList.add('swiping-out');
+                setTimeout(() => window.location.href = "index.html", 300);
+            } else { indicator.style.opacity = '0'; indicator.style.width = '0px'; }
         });
-        // --- SWIPE-TO-GO-BACK LOGIC ---
-let touchStartX = 0;
-let touchEndX = 0;
-const SWIPE_THRESHOLD = 100; // Minimum distance to trigger back
-const START_ZONE = 50; // Only allow swipe starting from the left edge (0-50px)
-
-// Create the visual indicator element
-const indicator = document.createElement('div');
-indicator.className = 'swipe-indicator';
-document.body.appendChild(indicator);
-
-document.addEventListener('touchstart', e => {
-    touchStartX = e.changedTouches[0].screenX;
-    // Reset indicator
-    indicator.style.opacity = '0';
-}, { passive: true });
-
-document.addEventListener('touchmove', e => {
-    let currentX = e.changedTouches[0].screenX;
-    let distance = currentX - touchStartX;
-
-    // Only track if swipe started near the left edge
-    if (touchStartX < START_ZONE && distance > 0) {
-        // Show visual feedback (glow gets stronger as you pull)
-        indicator.style.opacity = Math.min(distance / 200, 0.5);
-        indicator.style.width = (distance / 4) + 'px';
-    }
-}, { passive: true });
-
-document.addEventListener('touchend', e => {
-    touchEndX = e.changedTouches[0].screenX;
-    const distance = touchEndX - touchStartX;
-
-    // If started near left edge AND swiped far enough
-    if (touchStartX < START_ZONE && distance > SWIPE_THRESHOLD) {
-        triggerBackNavigation();
-    } else {
-        // Reset indicator if not enough distance
-        indicator.style.opacity = '0';
-        indicator.style.width = '0px';
-    }
-}, { passive: true });
-
-function triggerBackNavigation() {
-    // 1. Play back sound (if you have one)
-    if (typeof confirmSfx !== 'undefined') {
-        confirmSfx.play().catch(() => {});
-    }
-
-    // 2. Visual slide-out
-    document.body.classList.add('swiping-out');
-
-    // 3. Navigate to main menu
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 300);
-}
     </script>
 </body>
 </html>
