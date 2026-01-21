@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Starters | BrewVerse Elite</title>
+    <title>Starters | BrewVerse Pro</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -11,16 +11,16 @@
         :root {
             --accent-gold: #c9a66b;
             --glass-bg: rgba(15, 10, 5, 0.94);
-            --gold-glow: rgba(201, 166, 107, 0.3);
+            --gold-glow: rgba(201, 166, 107, 0.4);
         }
 
         body {
             margin: 0; background: #000; color: #fff;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden; opacity: 0; transition: opacity 0.8s ease;
+            overflow-x: hidden;
         }
-        body.page-loaded { opacity: 1; }
 
+        /* --- BACKGROUND --- */
         .bg-fixed {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1; background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), 
@@ -28,188 +28,189 @@
             background-size: cover; filter: blur(12px); transform: scale(1.1);
         }
 
-        /* --- 1. LEFT CORNER GO BACK --- */
+        /* --- HEADER & GO BACK --- */
         .header { 
             padding: 50px 20px 20px; position: sticky; top: 0; z-index: 100; 
             background: rgba(0,0,0,0.7); backdrop-filter: blur(25px); 
             display: flex; align-items: center; justify-content: center;
         }
-
-        .go-back-wrapper {
-            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
-        }
-
+        .go-back-wrapper { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); }
         .back-btn-elite {
             width: 50px; height: 50px; border-radius: 50%;
             background: rgba(255,255,255,0.05); border: 1px solid rgba(201, 166, 107, 0.3);
             display: flex; align-items: center; justify-content: center;
             color: var(--accent-gold); font-size: 1.5rem; text-decoration: none;
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
-        .back-btn-elite:active { transform: scale(0.85); background: var(--accent-gold); color: #000; }
+        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2.2rem; color: var(--accent-gold); }
 
-        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2.2rem; color: var(--accent-gold); text-shadow: 0 0 15px var(--gold-glow); }
-
-        .search-box {
-            margin: 15px 20px 0; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 14px 20px; display: flex; align-items: center; gap: 12px;
-        }
-        .search-box input { background: none; border: none; color: #fff; width: 100%; outline: none; font-size: 1rem; }
-
-        /* --- 2. MENU ITEMS --- */
-        .menu-container { padding: 25px 20px 100px; display: flex; flex-direction: column; gap: 20px; }
-
+        /* --- MENU ITEMS --- */
+        .menu-container { padding: 25px 20px 120px; display: flex; flex-direction: column; gap: 20px; }
+        
         .food-item {
             background: var(--glass-bg); border: 1px solid rgba(255,255,255,0.08);
             border-radius: 30px; padding: 15px; display: flex; align-items: center; gap: 18px;
-            transform: translateY(40px); opacity: 0;
-            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 1, 0.2, 1);
-            will-change: transform;
+            transition: 0.4s ease;
         }
-        .food-item.reveal { opacity: 1; transform: translateY(0); }
 
-        .item-thumb {
-            width: 80px; height: 80px; border-radius: 20px; object-fit: cover;
-            border: 2px solid var(--accent-gold); flex-shrink: 0; cursor: pointer;
+        .item-thumb { 
+            width: 80px; height: 80px; border-radius: 20px; object-fit: cover; 
+            border: 2px solid var(--accent-gold); cursor: zoom-in; 
+            transition: transform 0.3s ease;
         }
+        .item-thumb:active { transform: scale(0.9); }
 
         .item-info { flex-grow: 1; }
-        .item-name { font-weight: 800; font-size: 1.05rem; margin-bottom: 4px; color: #fff; }
-        .item-price { color: var(--accent-gold); font-weight: 800; font-size: 1.1rem; }
+        .item-name { font-weight: 800; font-size: 1.05rem; margin-bottom: 4px; }
+        .item-price { color: var(--accent-gold); font-weight: 800; }
 
-        .add-btn {
-            background: #fff; border: none; color: #000;
-            width: 45px; height: 45px; border-radius: 15px;
-            font-size: 1.6rem; font-weight: 800; cursor: pointer;
+        /* --- QUANTITY CONTROLLER --- */
+        .qty-wrapper {
+            display: flex; align-items: center; background: #fff; border-radius: 12px;
+            min-width: 45px; height: 45px; justify-content: center; transition: 0.3s ease;
         }
+        .qty-wrapper.active { min-width: 110px; }
+        .qty-btn { background: none; border: none; color: #000; width: 35px; height: 45px; font-size: 1.2rem; font-weight: 800; display: none; }
+        .qty-wrapper.active .qty-btn { display: block; }
+        .qty-val { color: #000; font-weight: 800; display: none; padding: 0 5px; }
+        .qty-wrapper.active .qty-val { display: block; }
+        .add-initial { color: #000; font-size: 1.6rem; font-weight: 800; cursor: pointer; }
+        .qty-wrapper.active .add-initial { display: none; }
 
-        /* --- 3. MODAL --- */
+        /* --- PHOTO POPUP (MODAL) --- */
         .img-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); backdrop-filter: blur(20px);
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
             display: flex; align-items: center; justify-content: center;
-            z-index: 2000; opacity: 0; visibility: hidden; transition: 0.4s;
+            z-index: 2000; opacity: 0; visibility: hidden; transition: 0.4s ease;
         }
         .img-modal.active { opacity: 1; visibility: visible; }
-        .modal-content { width: 90%; max-width: 400px; text-align: center; }
-        .modal-content img { width: 100%; border-radius: 40px; border: 1px solid var(--accent-gold); }
+        .modal-content { width: 85%; max-width: 400px; text-align: center; transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .img-modal.active .modal-content { transform: scale(1); }
+        .modal-content img { width: 100%; border-radius: 30px; border: 1px solid var(--accent-gold); box-shadow: 0 0 30px var(--gold-glow); }
+        .modal-name { font-family: 'Pacifico', cursive; color: var(--accent-gold); font-size: 1.8rem; margin-top: 15px; }
 
-        body.swiping-out { transform: translateX(100%); opacity: 0; transition: 0.4s cubic-bezier(0.7, 0, 0.3, 1); }
+        /* --- FLOATING CART --- */
+        #floating-cart {
+            position: fixed; bottom: 30px; right: 25px; width: 70px; height: 70px; border-radius: 50%;
+            background: var(--accent-gold); color: #000; display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; z-index: 1000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0); transition: 0.4s; text-decoration: none;
+        }
+        #floating-cart.visible { transform: scale(1); }
+        .badge { position: absolute; top: 0; right: 0; background: #fff; min-width: 22px; height: 22px; border-radius: 11px; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 2px solid var(--accent-gold); }
     </style>
 </head>
 <body>
 
     <div class="bg-fixed"></div>
 
+    <a href="Cart.html" id="floating-cart">
+        <i class="bi bi-cart-fill"></i>
+        <div class="badge" id="cart-count">0</div>
+    </a>
+
+    <div class="img-modal" id="imgModal" onclick="this.classList.remove('active')">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="fullImg" src="" alt="Preview">
+            <div class="modal-name" id="modalName"></div>
+            <div>SCAN TO SEE A LARGER VIEW</div>
+            <button onclick="document.getElementById('imgModal').classList.remove('active')" style="background:var(--accent-gold); border:none; color:#000; padding:10px 30px; border-radius:15px; margin-top:20px; font-weight:800;">CLOSE</button>
+        </div>
+    </div>
+
     <div class="header">
         <div class="go-back-wrapper">
-            <a href="index.html" class="back-btn-elite">
-                <i class="bi bi-chevron-left"></i>
-            </a>
+            <a href="index.html" class="back-btn-elite"><i class="bi bi-chevron-left"></i></a>
         </div>
         <h1>Starters</h1>
     </div>
 
-    <div class="search-box">
-        <i class="bi bi-search" style="color: var(--accent-gold);"></i>
-        <input type="text" id="searchInput" placeholder="Search delicious starters...">
-    </div>
-
     <div class="menu-container" id="menuList"></div>
-
-    <div class="img-modal" id="imgModal" onclick="closeImg()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="fullImg" src="" alt="Preview">
-            <div id="fullTitle" style="font-family:'Pacifico'; color:var(--accent-gold); font-size:2rem; margin-top:20px;"></div>
-            <div>SCAN TO SEE A LARGER VIEW</div>
-            <button onclick="closeImg()" style="background:var(--accent-gold); border:none; color:#000; padding:10px 40px; border-radius:30px; margin-top:20px; font-weight:800;">CLOSE</button>
-        </div>
-    </div>
 
     <script>
         const starterData = [
-            { name: "Crispy French Fries", price: 99, food: "fries.png" },
-            { name: "Peri-Peri Fries", price: 119, food: "peri_fries.jpg" },
-            { name: "Cheese Garlic Bread", price: 129, food: "cgb.jpg" },
-            { name: "Stuffed Garlic Bread", price: 149, food: "sgb.jpg" },
-            { name: "Veg Nuggets", price: 129, food: "nuggets.jpg" },
-            { name: "Cheese Corn Balls", price: 139, food: "cornballs.jpg" },
-            { name: "Paneer Tikka", price: 199, food: "tikka.jpg" },
-            { name: "Chilli Mushroom", price: 179, food: "mushroom.jpg" },
-            { name: "Loaded Nachos", price: 189, food: "nachos.jpg" },
-            { name: "Masala Fries", price: 109, food: "masala_fries.jpg" },
-            { name: "Cheesy Fries", price: 149, food: "cheesy_fries.jpg" },
-            { name: "Honey Chilli Potato", price: 169, food: "hcp.jpg" },
-            { name: "Crispy Veg Spring Rolls", price: 159, food: "rolls.jpg" },
-            { name: "Paneer Pakora", price: 149, food: "pakora.jpg" },
-            { name: "Cheese Chilli Toast", price: 139, food: "toast.jpg" },
-            { name: "Veg Momos", price: 149, food: "momos.jpg" },
-            { name: "Paneer Popcorn", price: 169, food: "popcorn.jpg" },
-            { name: "Corn Cheese Toast", price: 129, food: "cct.jpg" },
-            { name: "Special Platter", price: 249, food: "platter.jpg" }
+            { id: 's1', name: "Crispy French Fries", price: 99, food: "fries.png" },
+            { id: 's2', name: "Peri-Peri Fries", price: 119, food: "peri_fries.jpg" },
+            { id: 's3', name: "Cheese Garlic Bread", price: 129, food: "cgb.jpg" },
+            { id: 's4', name: "Stuffed Garlic Bread", price: 149, food: "sgb.jpg" },
+            { id: 's5', name: "Veg Nuggets", price: 129, food: "nuggets.jpg" },
+            { id: 's6', name: "Cheese Corn Balls", price: 139, food: "cornballs.jpg" },
+            { id: 's7', name: "Paneer Tikka", price: 199, food: "tikka.jpg" },
+            { id: 's8', name: "Chilli Mushroom", price: 179, food: "mushroom.jpg" },
+            { id: 's9', name: "Loaded Nachos", price: 189, food: "nachos.jpg" },
+            { id: 's10', name: "Masala Fries", price: 109, food: "masala_fries.jpg" },
+            { id: 's11', name: "Cheesy Fries", price: 149, food: "cheesy_fries.jpg" },
+            { id: 's12', name: "Honey Chilli Potato", price: 169, food: "hcp.jpg" },
+            { id: 's13', name: "Crispy Veg Spring Rolls", price: 159, food: "rolls.jpg" },
+            { id: 's14', name: "Paneer Pakora", price: 149, food: "pakora.jpg" },
+            { id: 's15', name: "Cheese Chilli Toast", price: 139, food: "toast.jpg" },
+            { id: 's16', name: "Veg Momos", price: 149, food: "momos.jpg" },
+            { id: 's17', name: "Paneer Popcorn", price: 169, food: "popcorn.jpg" },
+            { id: 's18', name: "Corn Cheese Toast", price: 129, food: "cct.jpg" },
+            { id: 's19', name: "Special Platter", price: 249, food: "platter.jpg" }
         ];
 
-        // --- COOL LIQUID SCROLL ---
-        let lastScrollY = window.scrollY;
-        function updateAnimations() {
-            const currentScrollY = window.scrollY;
-            const skew = (currentScrollY - lastScrollY) * 0.1;
-            const cards = document.querySelectorAll('.food-item');
-            cards.forEach(card => card.style.transform = `skewY(${skew}deg)`);
-            lastScrollY = currentScrollY;
-            requestAnimationFrame(updateAnimations);
-        }
-        requestAnimationFrame(updateAnimations);
+        let cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
 
-        function render(filter = "") {
+        function render() {
             const list = document.getElementById('menuList');
             list.innerHTML = "";
-            const filtered = starterData.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
-
-            filtered.forEach((item, i) => {
-                const card = document.createElement('div');
-                card.className = 'food-item';
-                card.innerHTML = `
-                    <img src="images/${item.food}" class="item-thumb" onclick="openImg('images/${item.food}', '${item.name}')" onerror="this.src='https://via.placeholder.com/150/111/c9a66b?text=Food'">
+            starterData.forEach(item => {
+                const qty = cart[item.id] ? cart[item.id].quantity : 0;
+                const active = qty > 0 ? 'active' : '';
+                const div = document.createElement('div');
+                div.className = 'food-item';
+                div.innerHTML = `
+                    <img src="images/${item.food}" class="item-thumb" onclick="openLightbox('images/${item.food}', '${item.name}')" onerror="this.src='https://via.placeholder.com/150/111/c9a66b?text=Food'">
                     <div class="item-info">
                         <div class="item-name">${item.name}</div>
                         <div class="item-price">₹${item.price}</div>
                     </div>
-                    <button class="add-btn" onclick="vibrateBtn(this)">+</button>
+                    <div class="qty-wrapper ${active}" id="wrap-${item.id}">
+                        <button class="qty-btn" onclick="updateQty('${item.id}', -1)">-</button>
+                        <div class="add-initial" onclick="updateQty('${item.id}', 1)">+</div>
+                        <div class="qty-val" id="val-${item.id}">${qty}</div>
+                        <button class="qty-btn" onclick="updateQty('${item.id}', 1)">+</button>
+                    </div>
                 `;
-                list.appendChild(card);
-                setTimeout(() => card.classList.add('reveal'), i * 80);
+                list.appendChild(div);
             });
+            updateCartUI();
         }
 
-        function vibrateBtn(btn) {
-            if(navigator.vibrate) navigator.vibrate(50);
-            btn.innerHTML = '<i class="bi bi-check"></i>';
-            btn.style.background = "#c9a66b";
-            setTimeout(() => { btn.innerHTML = "+"; btn.style.background = "#fff"; }, 1500);
-        }
-
-        function openImg(src, name) {
+        function openLightbox(src, name) {
             document.getElementById('fullImg').src = src;
-            document.getElementById('fullTitle').innerText = name;
+            document.getElementById('modalName').innerText = name;
             document.getElementById('imgModal').classList.add('active');
+            if(navigator.vibrate) navigator.vibrate(20);
         }
 
-        function closeImg() { document.getElementById('imgModal').classList.remove('active'); }
-
-        document.getElementById('searchInput').addEventListener('input', (e) => render(e.target.value));
-        window.addEventListener('load', () => { document.body.classList.add('page-loaded'); render(); });
-
-        // Swipe Gesture
-        let startX = 0;
-        document.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
-        document.addEventListener('touchend', e => {
-            if (startX < 60 && e.changedTouches[0].clientX - startX > 140) {
-                document.body.classList.add('swiping-out');
-                setTimeout(() => window.location.href = "index.html", 400);
+        function updateQty(id, change) {
+            if (!cart[id]) {
+                const item = starterData.find(i => i.id === id);
+                cart[id] = { ...item, quantity: 0 };
             }
-        });
+            cart[id].quantity += change;
+            if (cart[id].quantity <= 0) {
+                delete cart[id];
+                document.getElementById(`wrap-${id}`).classList.remove('active');
+            } else {
+                document.getElementById(`wrap-${id}`).classList.add('active');
+                document.getElementById(`val-${id}`).innerText = cart[id].quantity;
+            }
+            localStorage.setItem('brewverse_cart', JSON.stringify(cart));
+            updateCartUI();
+            if(navigator.vibrate) navigator.vibrate(40);
+        }
+
+        function updateCartUI() {
+            const count = Object.values(cart).reduce((a, b) => a + b.quantity, 0);
+            const fab = document.getElementById('floating-cart');
+            document.getElementById('cart-count').innerText = count;
+            count > 0 ? fab.classList.add('visible') : fab.classList.remove('visible');
+        }
+
+        window.onload = render;
     </script>
 </body>
 </html>
