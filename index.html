@@ -32,8 +32,8 @@
             transition: opacity 0.8s ease, visibility 0.8s;
         }
         .cup-wrapper { position: relative; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
-        .spinning-cup { font-size: 5rem; color: var(--accent-gold); display: inline-block; }
-        .cup-aura { position: absolute; width: 120px; height: 120px; background: radial-gradient(circle, rgba(201, 166, 107, 0.15) 0%, transparent 70%); border-radius: 50%; z-index: -1; }
+        .spinning-cup { font-size: 5rem; color: var(--accent-gold); display: inline-block; will-change: transform; }
+        .cup-aura { position: absolute; width: 150px; height: 150px; background: radial-gradient(circle, rgba(201, 166, 107, 0.2) 0%, transparent 70%); border-radius: 50%; z-index: -1; transform: translate(-50%, -50%); top: 50%; left: 50%; }
         .loader-hidden { opacity: 0; visibility: hidden; }
 
         /* --- 3. MAIN UI LAYOUT --- */
@@ -70,10 +70,7 @@
         }
         body.is-visible .category-card { opacity: 1; transform: translateX(0); }
 
-        .category-card.clicked { animation: hologramFlash 0.4s ease-out forwards; }
-        @keyframes hologramFlash {
-            50% { background: rgba(201, 166, 107, 0.2); box-shadow: 0 0 20px var(--hologram-glow); }
-        }
+        .category-card.clicked { border-color: var(--accent-gold); }
 
         .icon-box {
             width: 50px; height: 50px; background: rgba(255,255,255,0.05);
@@ -84,7 +81,7 @@
         .category-name { font-weight: 800; font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; pointer-events: none; }
 
         /* --- 5. FLOATING CART --- */
-        .floating-cart {
+        #cart-btn {
             position: fixed; right: 20px; bottom: 100px; width: 65px; height: 65px;
             background: var(--glass-bg); border: 1px solid var(--accent-gold);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -92,7 +89,7 @@
             animation: cartPulse 3s infinite ease-in-out; opacity: 0; transform: scale(0);
             transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        body.is-visible .floating-cart { opacity: 1; transform: scale(1); }
+        body.is-visible #cart-btn { opacity: 1; transform: scale(1); }
         @keyframes cartPulse { 50% { transform: translateY(-8px); box-shadow: 0 0 20px var(--accent-gold); } }
 
         .bottom-nav {
@@ -132,7 +129,7 @@
         <div class="category-card" data-value="Desserts"><div class="icon-box"><i class="bi bi-bootstrap"></i></div><span class="category-name">——</span></div>
     </div>
 
-    <div class="floating-cart" id="cart-btn"><i class="bi bi-cart3"></i></div>
+    <div id="cart-btn"><i class="bi bi-cart3"></i></div>
 
     <nav class="bottom-nav">
         <a href="#" class="nav-item active"><i class="bi bi-grid"></i></a>
@@ -142,211 +139,146 @@
 
     <script>
         // --- 1. CORE ENGINES ---
-class TextScramble {
-    constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
-    setText(newText) {
-        const oldText = this.el.innerText;
-        const length = Math.max(oldText.length, newText.length);
-        const promise = new Promise((resolve) => this.resolve = resolve);
-        this.queue = [];
-        for (let i = 0; i < length; i++) {
-            const from = oldText[i] || '';
-            const to = newText[i] || '';
-            const start = Math.floor(Math.random() * 40);
-            const end = start + Math.floor(Math.random() * 40);
-            this.queue.push({ from, to, start, end });
+        class TextScramble {
+            constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = ''; let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) { complete++; output += to; }
+                    else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) { char = this.randomChar(); this.queue[i].char = char; }
+                        output += `<span style="color:var(--accent-gold)">${char}</span>`;
+                    } else { output += from; }
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) { this.resolve(); }
+                else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
+            }
+            randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
         }
-        cancelAnimationFrame(this.frameRequest);
-        this.frame = 0;
-        this.update();
-        return promise;
-    }
-    update() {
-        let output = ''; let complete = 0;
-        for (let i = 0, n = this.queue.length; i < n; i++) {
-            let { from, to, start, end, char } = this.queue[i];
-            if (this.frame >= end) { complete++; output += to; }
-            else if (this.frame >= start) {
-                if (!char || Math.random() < 0.28) { char = this.randomChar(); this.queue[i].char = char; }
-                output += `<span style="color:var(--accent-gold)">${char}</span>`;
-            } else { output += from; }
-        }
-        this.el.innerHTML = output;
-        if (complete === this.queue.length) { this.resolve(); }
-        else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
-    }
-    randomChar() { return this.chars[Math.floor(Math.random() * this.chars.length)]; }
-}
 
-const confirmSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
-const decodeSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2567/2567-preview.mp3');
-confirmSfx.volume = 0.5; decodeSfx.volume = 0.2;
+        const confirmSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+        const decodeSfx = new Audio('https://assets.mixkit.co/active_storage/sfx/2567/2567-preview.mp3');
+        confirmSfx.volume = 0.5; decodeSfx.volume = 0.2;
 
-// --- 2. THE REFRESH LOGIC (Editable & Critical) ---
-function refreshAndShowMenu() {
-    const loader = document.getElementById('loader');
-    const cards = document.querySelectorAll('.category-card');
-    
-    // Reset page state (Crucial for Back Button)
-    document.body.classList.remove('is-visible');
-    loader.classList.remove('loader-hidden');
+        const cup = document.getElementById('js-cup');
+        const aura = document.getElementById('aura');
 
-    setTimeout(() => {
-        loader.classList.add('loader-hidden');
-        document.body.classList.add('is-visible');
-        
-        cards.forEach((card, i) => {
-            card.classList.remove('clicked'); // Clear previous click effects
-            const el = card.querySelector('.category-name');
-            const fx = new TextScramble(el);
+        // --- 2. MASTER INITIALIZATION ---
+        function refreshAndShowMenu() {
+            const loader = document.getElementById('loader');
+            const cards = document.querySelectorAll('.category-card');
             
+            // Reset states for "Back" button support
+            document.body.classList.remove('is-visible');
+            loader.classList.remove('loader-hidden');
+            document.querySelector('header').style.opacity = '0';
+            document.querySelector('.bottom-nav').style.transform = 'translateY(0)';
+
+            // Re-animate Cup
+            cup.animate([
+                { transform: 'rotateY(0deg) rotateX(0deg) translateY(0px)' },
+                { transform: 'rotateY(180deg) rotateX(20deg) translateY(-20px)' },
+                { transform: 'rotateY(360deg) rotateX(0deg) translateY(0px)' }
+            ], { duration: 3000, iterations: Infinity, easing: 'ease-in-out' });
+
+            aura.animate([
+                { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' },
+                { opacity: 0.6, transform: 'translate(-50%, -50%) scale(1.3)' },
+                { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' }
+            ], { duration: 2000, iterations: Infinity, easing: 'ease-in-out' });
+
             setTimeout(() => {
-                decodeSfx.play().catch(() => {});
-                // Formats data-value (e.g., "MainCourse" -> "Main Course")
-                let name = card.dataset.value.replace(/([A-Z])/g, ' $1').trim();
-                fx.setText(name);
-            }, 500 + (i * 150));
-        });
-    }, 1800);
-}
+                loader.classList.add('loader-hidden');
+                document.body.classList.add('is-visible');
+                
+                cards.forEach((card, i) => {
+                    card.classList.remove('clicked');
+                    card.style.zIndex = "1"; // Reset tunnel effect
+                    const el = card.querySelector('.category-name');
+                    const fx = new TextScramble(el);
+                    
+                    setTimeout(() => {
+                        decodeSfx.play().catch(() => {});
+                        let name = card.dataset.value.replace(/([A-Z])/g, ' $1').trim();
+                        fx.setText(name);
+                    }, 500 + (i * 150));
+                });
+            }, 2000);
+        }
 
-// --- 3. EVENT LISTENERS ---
-
-// Triggers every time page is shown (even from cache/back button)
-window.addEventListener('pageshow', (event) => {
-    refreshAndShowMenu();
-});
-
-// Robust Navigation
-document.querySelectorAll('.category-card').forEach(card => {
-    card.addEventListener('click', function() {
-        confirmSfx.currentTime = 0;
-        confirmSfx.play().catch(() => {});
-        this.classList.add('clicked');
-        
-        // Slight delay to allow animation/sound to play
-        setTimeout(() => {
-            window.location.href = this.dataset.value + ".html";
-        }, 450);
-    });
-});
-
-// Magnetic Bean Follower
-const bean = document.getElementById('floating-bean');
-let tX = 0, tY = 0, cX = 0, cY = 0;
-document.addEventListener('mousemove', (e) => {
-    bean.style.opacity = "1";
-    tX = e.clientX; tY = e.clientY;
-});
-document.addEventListener('touchmove', (e) => {
-    bean.style.opacity = "1";
-    tX = e.touches[0].clientX; tY = e.touches[0].clientY;
-});
-function loop() {
-    cX += (tX - cX) * 0.1; cY += (tY - cY) * 0.1;
-    bean.style.transform = `translate3d(${cX-20}px, ${cY-20}px, 0)`;
-    requestAnimationFrame(loop);
-}
-loop();
-// --- ADVANCED TUNNEL EXIT ANIMATION ---
-document.querySelectorAll('.category-card').forEach(card => {
-    card.addEventListener('click', function(e) {
-        confirmSfx.play().catch(() => {});
-        this.classList.add('clicked');
-
-        // Create a 'Tunnel' effect: Card expands and blurs others
-        this.style.zIndex = "1000";
-        this.animate([
-            { transform: 'scale(1) translateZ(0)', filter: 'brightness(1) blur(0px)' },
-            { transform: 'scale(10) translateZ(500px)', filter: 'brightness(3) blur(15px)', opacity: 0 }
-        ], {
-            duration: 700,
-            easing: 'cubic-bezier(0.7, 0, 0.3, 1)',
-            fill: 'forwards'
+        // --- 3. EVENT LISTENERS ---
+        window.addEventListener('pageshow', (event) => {
+            refreshAndShowMenu();
         });
 
-        // Fade out header and other cards
-        document.querySelector('header').style.opacity = '0';
-        document.querySelector('.bottom-nav').style.transform = 'translateY(100px)';
+        // Navigation & Tunnel Animation
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                confirmSfx.currentTime = 0;
+                confirmSfx.play().catch(() => {});
+                this.classList.add('clicked');
 
-        setTimeout(() => {
-            window.location.href = this.dataset.value + ".html";
-        }, 650);
-    });
-});
-// --- ADVANCED CART EXPAND ANIMATION ---
-const cartBtn = document.getElementById('cart-btn');
+                // Tunnel Effect
+                this.style.zIndex = "1000";
+                this.animate([
+                    { transform: 'scale(1)', filter: 'brightness(1) blur(0px)' },
+                    { transform: 'scale(10)', filter: 'brightness(3) blur(15px)', opacity: 0 }
+                ], { duration: 700, easing: 'cubic-bezier(0.7, 0, 0.3, 1)', fill: 'forwards' });
 
-cartBtn.addEventListener('click', function() {
-    confirmSfx.play().catch(() => {});
+                document.querySelector('header').style.opacity = '0';
+                document.querySelector('.bottom-nav').style.transform = 'translateY(100px)';
 
-    // Create a temporary expansion circle
-    const burst = document.createElement('div');
-    burst.style.cssText = `
-        position: fixed;
-        top: ${this.getBoundingClientRect().top + 32}px;
-        left: ${this.getBoundingClientRect().left + 32}px;
-        width: 10px; height: 10px;
-        background: var(--accent-gold);
-        border-radius: 50%;
-        z-index: 10000;
-        pointer-events: none;
-    `;
-    document.body.appendChild(burst);
+                setTimeout(() => {
+                    window.location.href = this.dataset.value + ".html";
+                }, 650);
+            });
+        });
 
-    burst.animate([
-        { transform: 'scale(1)', opacity: 1 },
-        { transform: 'scale(300)', opacity: 1 }
-    ], {
-        duration: 600,
-        easing: 'ease-in'
-    });
+        // Cart Burst Animation
+        document.getElementById('cart-btn').addEventListener('click', function() {
+            confirmSfx.play().catch(() => {});
+            const burst = document.createElement('div');
+            burst.style.cssText = `position:fixed; top:${this.getBoundingClientRect().top + 32}px; left:${this.getBoundingClientRect().left + 32}px; width:10px; height:10px; background:var(--accent-gold); border-radius:50%; z-index:10000; pointer-events:none;`;
+            document.body.appendChild(burst);
+            burst.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(300)', opacity: 1 }], { duration: 600, easing: 'ease-in' });
+            setTimeout(() => { window.location.href = "Cart.html"; }, 500);
+        });
 
-    setTimeout(() => {
-        window.location.href = "Cart.html";
-    }, 500);
-});
-// --- ADVANCED CUP ANIMATION ---
-const cup = document.getElementById('js-cup');
-const aura = document.getElementById('aura');
-
-// 1. 3D Buoyancy Animation
-// This makes the cup rotate 360 degrees while wobbling on the X/Y axes
-cup.animate([
-    { transform: 'rotateY(0deg) rotateX(0deg) translateY(0px)' },
-    { transform: 'rotateY(180deg) rotateX(20deg) translateY(-20px)' },
-    { transform: 'rotateY(360deg) rotateX(0deg) translateY(0px)' }
-], {
-    duration: 3000,
-    iterations: Infinity,
-    easing: 'ease-in-out'
-});
-
-// 2. Aura Pulse
-// Syncs a glowing pulse with the cup's movements
-aura.animate([
-    { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' },
-    { opacity: 0.6, transform: 'translate(-50%, -50%) scale(1.3)' },
-    { opacity: 0.2, transform: 'translate(-50%, -50%) scale(0.8)' }
-], {
-    duration: 2000,
-    iterations: Infinity,
-    easing: 'ease-in-out'
-});
-
-// --- ENTRANCE TRANSITION ---
-window.addEventListener('pageshow', () => {
-    const loader = document.getElementById('loader');
-    
-    setTimeout(() => {
-        // Slow down the cup before hiding (Simulates "Landing")
-        cup.style.transition = "all 1s ease";
-        cup.style.filter = "drop-shadow(0 0 40px var(--accent-gold))";
-        
-        loader.classList.add('loader-hidden');
-        document.body.classList.add('is-visible');
-    }, 2000);
-});
+        // Bean Follower
+        const bean = document.getElementById('floating-bean');
+        let tX = 0, tY = 0, cX = 0, cY = 0;
+        const move = (e) => {
+            bean.style.opacity = "1";
+            tX = e.touches ? e.touches[0].clientX : e.clientX;
+            tY = e.touches ? e.touches[0].clientY : e.clientY;
+        };
+        document.addEventListener('mousemove', move);
+        document.addEventListener('touchmove', move);
+        function loop() {
+            cX += (tX - cX) * 0.1; cY += (tY - cY) * 0.1;
+            bean.style.transform = `translate3d(${cX-20}px, ${cY-20}px, 0)`;
+            requestAnimationFrame(loop);
+        }
+        loop();
     </script>
 </body>
 </html>
