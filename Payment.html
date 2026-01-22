@@ -20,7 +20,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh;
         }
 
-        /* --- BACKGROUND ANIMATION --- */
+        /* --- BACKGROUND --- */
         .blob-bg { position: fixed; inset: 0; z-index: -1; filter: blur(80px); opacity: 0.35; }
         .blob { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: var(--accent); animation: float 15s infinite alternate; }
         .blob-1 { top: -100px; right: -100px; }
@@ -45,8 +45,7 @@
         .method-item {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             border-radius: 24px; padding: 25px; text-align: center;
-            backdrop-filter: blur(20px); transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative; overflow: hidden; cursor: pointer;
+            backdrop-filter: blur(20px); transition: 0.3s; cursor: pointer;
         }
         .method-item.active { border-color: var(--accent); background: rgba(201, 166, 107, 0.08); }
         .method-item i { font-size: 2.2rem; color: var(--accent); display: block; margin-bottom: 10px; }
@@ -63,13 +62,14 @@
         .qr-card {
             background: #0a0a0a; border: 1px solid var(--glass-border);
             padding: 35px; border-radius: 40px; text-align: center;
-            width: 85%; max-width: 340px; transform: scale(0.9); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 85%; max-width: 340px; transform: scale(0.9); transition: 0.4s;
+            position: relative;
         }
-        .modal-overlay.active .qr-card { transform: scale(1); }
-        
-        /* QR & Loading Styles */
+        .modal-close-icon { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--accent); font-size: 1.2rem; cursor: pointer; }
+
         .qr-frame { background: #fff; padding: 15px; border-radius: 20px; margin: 20px 0; overflow: hidden; }
         .qr-frame img { width: 100%; display: block; border-radius: 10px; }
+        
         .spinner {
             width: 50px; height: 50px; border: 4px solid rgba(201,166,107,0.1);
             border-top: 4px solid var(--accent); border-radius: 50%;
@@ -83,9 +83,8 @@
             width: 100%; height: 75px; border-radius: 38px; border: none;
             background: #fff; color: #000; font-weight: 800; font-size: 1rem;
             display: flex; align-items: center; justify-content: center; gap: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: 0.4s; cursor: pointer;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); cursor: pointer;
         }
-        .pay-btn:active { transform: scale(0.95); background: var(--accent); }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -96,6 +95,7 @@
 
     <div class="modal-overlay" id="paymentModal">
         <div class="qr-card" id="qrStage" style="display:none;">
+            <button class="modal-close-icon" onclick="toggleModal(false)"><i class="bi bi-x-lg"></i></button>
             <div class="qr-frame">
                 <img src="qr_code.png" alt="Payment QR" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=pal900290@okhdfcbank'">
             </div>
@@ -104,6 +104,7 @@
         </div>
 
         <div class="qr-card" id="cardStage" style="display:none; text-align: left;">
+            <button class="modal-close-icon" onclick="toggleModal(false)"><i class="bi bi-x-lg"></i></button>
             <h3 style="color:var(--accent); text-align:center;">Card Payment</h3>
             <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
                 <input type="tel" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" 
@@ -116,20 +117,10 @@
             </div>
         </div>
 
-        <div class="qr-card" id="walletStage" style="display:none;">
-            <h3 style="color:var(--accent); font-family:'Pacifico';">Select Wallet</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
-                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">Paytm</button>
-                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">PhonePe</button>
-                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">Amazon</button>
-                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">Mobikwik</button>
-            </div>
-        </div>
-
         <div class="qr-card" id="loadingStage" style="display:none;">
             <div class="spinner"></div>
-            <h3 id="statusText" style="color:var(--accent); font-family:'Pacifico'; margin-top:20px;">Contacting Bank...</h3>
-            <p style="font-size:0.75rem; opacity:0.6;">Verifying securely...</p>
+            <h3 id="statusText" style="color:var(--accent); font-family:'Pacifico'; margin-top:20px;">Processing...</h3>
+            <p style="font-size:0.75rem; opacity:0.6;">Securely finalizing order</p>
         </div>
     </div>
 
@@ -157,8 +148,8 @@
             <span>CARDS</span>
         </div>
         <div class="method-item" onclick="selectMethod(this)">
-            <i class="bi bi-wallet2"></i>
-            <span>WALLETS</span>
+            <i class="bi bi-cash-stack"></i>
+            <span>CASH</span>
         </div>
     </div>
 
@@ -175,20 +166,19 @@
         function init() {
             const cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
             const subtotal = Object.values(cart).reduce((s, i) => s + (i.price * i.quantity), 0);
-            const gst = Math.round(subtotal * 0.05);
-            grandTotal = subtotal + gst;
+            grandTotal = subtotal + Math.round(subtotal * 0.05);
             document.getElementById('finalAmt').innerText = `₹${grandTotal}`;
         }
 
-        // --- LUHN VALIDATION ---
-        function checkLuhn(number) {
-            let sum = 0; let shouldDouble = false;
-            for (let i = number.length - 1; i >= 0; i--) {
-                let digit = parseInt(number.charAt(i));
-                if (shouldDouble) { if ((digit *= 2) > 9) digit -= 9; }
-                sum += digit; shouldDouble = !shouldDouble;
+        // --- LUHN CHECK ---
+        function checkLuhn(n) {
+            let s=0, d=false;
+            for(let i=n.length-1; i>=0; i--) {
+                let dig = parseInt(n.charAt(i));
+                if(d) { if((dig*=2)>9) dig-=9; }
+                s+=dig; d=!d;
             }
-            return (sum % 10) === 0;
+            return (s%10)===0;
         }
 
         const cardInput = document.getElementById('cardNumber');
@@ -196,49 +186,52 @@
             let val = e.target.value.replace(/\D/g, '').substring(0, 16);
             e.target.value = val.match(/.{1,4}/g)?.join(' ') || "";
             const btn = document.getElementById('cardPayBtn');
-            if (val.length === 16 && checkLuhn(val)) {
-                btn.style.opacity = "1"; btn.disabled = false;
-            } else {
-                btn.style.opacity = "0.5"; btn.disabled = true;
-            }
+            btn.disabled = !(val.length === 16 && checkLuhn(val));
+            btn.style.opacity = btn.disabled ? "0.5" : "1";
         });
 
         function startPaymentFlow() {
             const method = document.querySelector('.method-item.active span').innerText;
             const modal = document.getElementById('paymentModal');
-            const stages = ['qrStage', 'cardStage', 'walletStage', 'loadingStage'];
-            stages.forEach(s => document.getElementById(s).style.display = 'none');
-
-            if (method.includes("SCAN QR")) {
-                showModal('qrStage');
-            } else if (method.includes("UPI APPS")) {
-                window.location.href = `upi://pay?pa=pal900290@okhdfcbank&pn=BrewVerse&am=${grandTotal}&cu=INR`;
-            } else if (method.includes("CARDS")) {
-                showModal('cardStage');
-            } else if (method.includes("WALLETS")) {
-                showModal('walletStage');
-            }
+            
+            // --- UPI REDIRECT LOGIC ---
+            if (method.includes("UPI APPS")) {
+                // Opens PhonePe/GPay/Paytm automatically with the amount
+                const upiUrl = `upi://pay?pa=pal900290@okhdfcbank&pn=BrewVerse&am=${grandTotal}&cu=INR`;
+                window.location.href = upiUrl;
+                
+                // Also clear cart after a short delay since they left the browser
+                setTimeout(() => {
+                    localStorage.removeItem('brewverse_cart');
+                    window.location.href = "CONFIRM_ORDER.html";
+                }, 3000);
+            } 
+            else if (method.includes("SCAN QR")) { showModal('qrStage'); }
+            else if (method.includes("CARDS")) { showModal('cardStage'); }
+            else if (method.includes("CASH")) { startLoading(); }
         }
 
         function showModal(id) {
             const modal = document.getElementById('paymentModal');
+            document.querySelectorAll('.qr-card').forEach(c => c.style.display='none');
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
             document.getElementById(id).style.display = 'block';
         }
 
+        function toggleModal(show) {
+            const modal = document.getElementById('paymentModal');
+            if(!show) { modal.classList.remove('active'); setTimeout(() => modal.style.display='none', 400); }
+        }
+
         function startLoading() {
-            const stages = ['qrStage', 'cardStage', 'walletStage'];
-            stages.forEach(s => document.getElementById(s).style.display = 'none');
-            document.getElementById('loadingStage').style.display = 'block';
+            showModal('loadingStage');
             const status = document.getElementById('statusText');
-            
-            setTimeout(() => { status.innerText = "Verifying Account..."; }, 1500);
-            setTimeout(() => { status.innerText = "Finalizing Order..."; }, 3000);
+            setTimeout(() => { status.innerText = "Verifying..."; }, 1500);
             setTimeout(() => {
                 localStorage.removeItem('brewverse_cart');
                 window.location.href = "CONFIRM_ORDER.html";
-            }, 4500);
+            }, 3000);
         }
 
         function selectMethod(el) {
