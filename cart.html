@@ -29,7 +29,6 @@
             background-size: cover; background-position: center; filter: blur(15px); transform: scale(1.1);
         }
 
-        /* --- NEW BACK MENU HEADER --- */
         .nav-header {
             padding: 40px 20px 10px;
             display: flex;
@@ -47,7 +46,6 @@
         }
         .page-title { font-family: 'Pacifico', cursive; color: var(--accent); font-size: 1.5rem; margin: 0; }
 
-        /* --- CART ITEMS SECTION --- */
         .cart-section { 
             padding: 20px;
             display: flex; 
@@ -78,7 +76,6 @@
         }
         .qty-num { width: 25px; text-align: center; font-weight: 800; }
 
-        /* --- EMPTY STATE --- */
         .empty-state-wrapper {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             text-align: center; padding: 120px 30px;
@@ -96,14 +93,12 @@
             padding: 12px 35px; border-radius: 18px; font-weight: 800; margin-top: 25px;
         }
 
-        /* --- COUPON --- */
         .coupon-chip {
             background: rgba(201, 166, 107, 0.05); border: 1px dashed var(--accent);
             border-radius: 20px; padding: 15px; margin: 20px; display: flex; gap: 10px;
         }
         .coupon-chip input { background: none; border: none; color: #fff; flex: 1; outline: none; }
 
-        /* --- BILLING --- */
         .billing-card {
             margin: 20px; padding: 25px; border-radius: 35px;
             background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border);
@@ -115,7 +110,6 @@
             opacity: 1; font-weight: 800; font-size: 1.5rem; color: var(--accent);
         }
 
-        /* --- FOOTER PAY BUTTON --- */
         .footer-action { position: fixed; bottom: 30px; left: 20px; right: 20px; z-index: 1000; }
         .pay-btn {
             width: 100%; height: 70px; border-radius: 25px; border: none;
@@ -125,7 +119,6 @@
             cursor: pointer;
         }
 
-        /* --- TRANSITION VEIL --- */
         .transition-veil {
             position: fixed; inset: 0; background: #fff; z-index: 10000;
             transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
@@ -196,9 +189,7 @@
                 const div = document.createElement('div');
                 div.className = 'cart-item';
                 div.id = `item-${item.id}`;
-                div.style.opacity = "0";
-                div.style.transform = "translateX(20px)";
-
+                
                 div.innerHTML = `
                     <img src="images/${item.food}" class="item-img" onerror="this.src='https://via.placeholder.com/100'">
                     <div class="item-info">
@@ -212,6 +203,10 @@
                     </div>
                 `;
                 container.appendChild(div);
+                
+                // Entrance animation
+                div.style.opacity = "0";
+                div.style.transform = "translateX(20px)";
                 setTimeout(() => {
                     div.style.opacity = "1";
                     div.style.transform = "translateX(0)";
@@ -257,12 +252,19 @@
         function processOrder() {
             const veil = document.getElementById('veil');
             const btn = document.querySelector('.pay-btn');
+            
+            // Step 1: Visual feedback
             btn.innerHTML = `PROCESSING...`;
             
+            // Step 2: Ensure data is saved one last time for the payment page to read
+            localStorage.setItem('brewverse_cart', JSON.stringify(cart));
+
+            // Step 3: Trigger transition animation
             setTimeout(() => {
                 veil.style.transform = "translateY(0)";
                 setTimeout(() => {
-                    localStorage.removeItem('brewverse_cart');
+                    // Step 4: Move to payment page. 
+                    // Note: WE DO NOT REMOVE CART HERE so the payment page can see the total.
                     window.location.href = "Payment.html";
                 }, 600);
             }, 400);
