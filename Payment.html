@@ -20,7 +20,7 @@
             font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh;
         }
 
-        /* --- DYNAMIC BACKGROUND ANIMATION --- */
+        /* --- BACKGROUND ANIMATION --- */
         .blob-bg { position: fixed; inset: 0; z-index: -1; filter: blur(80px); opacity: 0.35; }
         .blob { position: absolute; width: 300px; height: 300px; border-radius: 50%; background: var(--accent); animation: float 15s infinite alternate; }
         .blob-1 { top: -100px; right: -100px; }
@@ -35,23 +35,13 @@
             background: var(--glass-bg); backdrop-filter: blur(10px); text-decoration: none;
         }
 
-        /* --- TOTAL DISPLAY (AUTO-SYNCED) --- */
-        .total-container { 
-            text-align: center; 
-            margin: 20px 0 30px; 
-            animation: fadeInUp 0.8s ease; 
-        }
+        /* --- TOTAL DISPLAY --- */
+        .total-container { text-align: center; margin: 20px 0 30px; animation: fadeInUp 0.8s ease; }
         .amount-tag { font-size: 4.2rem; font-weight: 800; color: var(--accent); letter-spacing: -2px; line-height: 1; }
         .tax-info { font-size: 0.7rem; opacity: 0.5; letter-spacing: 2px; text-transform: uppercase; margin-top: 8px; }
 
-        /* --- MAGNETIC PAYMENT GRID --- */
-        .methods-grid { 
-            padding: 0 20px; 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            margin-top: -10px; 
-        }
+        /* --- PAYMENT GRID --- */
+        .methods-grid { padding: 0 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: -10px; }
         .method-item {
             background: var(--glass-bg); border: 1px solid var(--glass-border);
             border-radius: 24px; padding: 25px; text-align: center;
@@ -62,31 +52,30 @@
         .method-item i { font-size: 2.2rem; color: var(--accent); display: block; margin-bottom: 10px; }
         .method-item span { font-size: 0.85rem; font-weight: 800; opacity: 0.8; }
 
-        /* --- QR MODAL --- */
+        /* --- MODAL SYSTEM --- */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
             backdrop-filter: blur(30px); z-index: 10000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
             opacity: 0; transition: opacity 0.4s;
         }
+        .modal-overlay.active { opacity: 1; display: flex; }
         .qr-card {
             background: #0a0a0a; border: 1px solid var(--glass-border);
             padding: 35px; border-radius: 40px; text-align: center;
             width: 85%; max-width: 340px; transform: scale(0.9); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .modal-overlay.active { opacity: 1; display: flex; }
         .modal-overlay.active .qr-card { transform: scale(1); }
         
-        .qr-frame { background: #fff; padding: 15px; border-radius: 20px; margin: 20px 0; position: relative; overflow: hidden; }
+        /* QR & Loading Styles */
+        .qr-frame { background: #fff; padding: 15px; border-radius: 20px; margin: 20px 0; overflow: hidden; }
         .qr-frame img { width: 100%; display: block; border-radius: 10px; }
-        
-        .laser-line { position: absolute; left: 0; width: 100%; height: 3px; background: var(--accent); box-shadow: 0 0 15px var(--accent); animation: scanLine 2.5s infinite linear; }
-        @keyframes scanLine { 0% { top: 0%; } 100% { top: 100%; } }
-
-        .upi-badge {
-            font-weight: 800; color: var(--accent); background: rgba(255,255,255,0.05); 
-            padding: 10px; border-radius: 12px; font-size: 0.85rem; border: 1px solid var(--glass-border);
+        .spinner {
+            width: 50px; height: 50px; border: 4px solid rgba(201,166,107,0.1);
+            border-top: 4px solid var(--accent); border-radius: 50%;
+            animation: spin 1s linear infinite; margin: 20px auto;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- FOOTER ACTION --- */
         .pay-action { position: fixed; bottom: 35px; left: 25px; right: 25px; }
@@ -94,9 +83,8 @@
             width: 100%; height: 75px; border-radius: 38px; border: none;
             background: #fff; color: #000; font-weight: 800; font-size: 1rem;
             display: flex; align-items: center; justify-content: center; gap: 12px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: 0.4s;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); transition: 0.4s; cursor: pointer;
         }
-        .pay-btn i { font-size: 2rem; color: var(--accent); }
         .pay-btn:active { transform: scale(0.95); background: var(--accent); }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -106,18 +94,42 @@
 
     <div class="blob-bg"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
 
-    <div class="modal-overlay" id="qrModal" onclick="toggleQR(false)">
-        <div class="qr-card" onclick="event.stopPropagation()">
-            <h2 style="font-family:'Pacifico'; color:var(--accent); margin:0; font-size: 2.2rem;">Payment QR</h2>
-            <p style="font-size:0.85rem; opacity:0.6; margin-top: 8px;">Scan QR to pay securely and get your bill</p>
-            
+    <div class="modal-overlay" id="paymentModal">
+        <div class="qr-card" id="qrStage" style="display:none;">
             <div class="qr-frame">
-                <div class="laser-line"></div>
-                <img src="qr_code.png" alt="Payment QR" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=pal900290@okhdfcbank&pn=BrewVerse%20Elite'">
+                <img src="qr_code.png" alt="Payment QR" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=pal900290@okhdfcbank'">
             </div>
-            
-            <div class="upi-badge">pal900290@okhdfcbank</div>
-            <button onclick="toggleQR(false)" style="margin-top: 25px; background: none; border: 1px solid var(--glass-border); color: #fff; padding: 10px 25px; border-radius: 18px; cursor: pointer; font-weight: 800;">CANCEL</button>
+            <h3 style="color:var(--accent); font-family:'Pacifico'; margin:10px 0;">Scan & Pay</h3>
+            <button class="pay-btn" style="width:100%; margin-top:20px; background:var(--accent); color:#000;" onclick="startLoading()">DONE</button>
+        </div>
+
+        <div class="qr-card" id="cardStage" style="display:none; text-align: left;">
+            <h3 style="color:var(--accent); text-align:center;">Card Payment</h3>
+            <div style="display:flex; flex-direction:column; gap:15px; margin-top:20px;">
+                <input type="tel" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" 
+                    style="width:100%; box-sizing:border-box; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); padding:12px; border-radius:10px; color:#fff; font-family: monospace; letter-spacing: 2px;">
+                <div style="display:flex; gap:10px;">
+                    <input type="tel" placeholder="MM/YY" maxlength="5" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); padding:12px; border-radius:10px; color:#fff;">
+                    <input type="tel" placeholder="CVV" maxlength="3" style="flex:1; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); padding:12px; border-radius:10px; color:#fff;">
+                </div>
+                <button id="cardPayBtn" class="pay-btn" style="background:#fff; color:#000; opacity: 0.5;" onclick="startLoading()" disabled>PAY NOW</button>
+            </div>
+        </div>
+
+        <div class="qr-card" id="walletStage" style="display:none;">
+            <h3 style="color:var(--accent); font-family:'Pacifico';">Select Wallet</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">Paytm</button>
+                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">PhonePe</button>
+                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">Amazon</button>
+                <button class="pay-btn" style="font-size:0.8rem; height:50px;" onclick="startLoading()">Mobikwik</button>
+            </div>
+        </div>
+
+        <div class="qr-card" id="loadingStage" style="display:none;">
+            <div class="spinner"></div>
+            <h3 id="statusText" style="color:var(--accent); font-family:'Pacifico'; margin-top:20px;">Contacting Bank...</h3>
+            <p style="font-size:0.75rem; opacity:0.6;">Verifying securely...</p>
         </div>
     </div>
 
@@ -128,11 +140,11 @@
 
     <div class="total-container">
         <div class="amount-tag" id="finalAmt">₹0</div>
-        <div class="tax-info">Encrypted Payment Gateway</div>
+        <div class="tax-info">Encrypted Gateway</div>
     </div>
 
-    <div class="methods-grid" id="methodsGrid">
-        <div class="method-item active" onclick="toggleQR(true)">
+    <div class="methods-grid">
+        <div class="method-item active" onclick="selectMethod(this)">
             <i class="bi bi-qr-code-scan"></i>
             <span>SCAN QR</span>
         </div>
@@ -151,93 +163,88 @@
     </div>
 
     <div class="pay-action">
-        <button class="pay-btn" onclick="toggleQR(true)">
+        <button class="pay-btn" onclick="startPaymentFlow()">
             <i class="bi bi-fingerprint"></i>
             <span>SECURE PAYMENT</span>
         </button>
     </div>
 
     <script>
-        // --- 1. AUTOMATIC DATA TRANSFER FROM CART ---
-    function init() {
-    // 1. Check if the cart exists in memory
-    const savedData = localStorage.getItem('brewverse_cart');
-    
-    if (!savedData) {
-        console.error("No cart data found in localStorage!");
-        document.getElementById('finalAmt').innerText = "₹0";
-        return;
-    }
+        let grandTotal = 0;
 
-    try {
-        const cart = JSON.parse(savedData);
-        
-        // 2. Calculate the total (Price * Quantity)
-        let subtotal = 0;
-        Object.values(cart).forEach(item => {
-            subtotal += (Number(item.price) * Number(item.quantity));
+        function init() {
+            const cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
+            const subtotal = Object.values(cart).reduce((s, i) => s + (i.price * i.quantity), 0);
+            const gst = Math.round(subtotal * 0.05);
+            grandTotal = subtotal + gst;
+            document.getElementById('finalAmt').innerText = `₹${grandTotal}`;
+        }
+
+        // --- LUHN VALIDATION ---
+        function checkLuhn(number) {
+            let sum = 0; let shouldDouble = false;
+            for (let i = number.length - 1; i >= 0; i--) {
+                let digit = parseInt(number.charAt(i));
+                if (shouldDouble) { if ((digit *= 2) > 9) digit -= 9; }
+                sum += digit; shouldDouble = !shouldDouble;
+            }
+            return (sum % 10) === 0;
+        }
+
+        const cardInput = document.getElementById('cardNumber');
+        cardInput.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+            e.target.value = val.match(/.{1,4}/g)?.join(' ') || "";
+            const btn = document.getElementById('cardPayBtn');
+            if (val.length === 16 && checkLuhn(val)) {
+                btn.style.opacity = "1"; btn.disabled = false;
+            } else {
+                btn.style.opacity = "0.5"; btn.disabled = true;
+            }
         });
 
-        // 3. Add 5% GST (Matches Cart.html logic)
-        const gst = Math.round(subtotal * 0.05);
-        const grandTotal = subtotal + gst;
+        function startPaymentFlow() {
+            const method = document.querySelector('.method-item.active span').innerText;
+            const modal = document.getElementById('paymentModal');
+            const stages = ['qrStage', 'cardStage', 'walletStage', 'loadingStage'];
+            stages.forEach(s => document.getElementById(s).style.display = 'none');
 
-        // 4. Force the display to update
-        const displayElement = document.getElementById('finalAmt');
-        if (displayElement) {
-            displayElement.innerText = `₹${grandTotal}`;
-        }
-        
-    } catch (error) {
-        console.error("Error parsing cart data:", error);
-        document.getElementById('finalAmt').innerText = "₹0";
-    }
-}
-
-// Run the function immediately
-window.onload = init;
-
-        // --- 2. UI INTERACTIONS ---
-        function toggleQR(show) {
-            const modal = document.getElementById('qrModal');
-            if (show) {
-                modal.style.display = 'flex';
-                setTimeout(() => modal.classList.add('active'), 10);
-                if(navigator.vibrate) navigator.vibrate([40, 60]);
-                
-                // Success Simulation (Redirection after payment)
-                setTimeout(() => {
-                    localStorage.removeItem('brewverse_cart');
-                    window.location.href = "CONFIRM_ORDER.html";
-                }, 8000);
-            } else {
-                modal.classList.remove('active');
-                setTimeout(() => modal.style.display = 'none', 400);
+            if (method.includes("SCAN QR")) {
+                showModal('qrStage');
+            } else if (method.includes("UPI APPS")) {
+                window.location.href = `upi://pay?pa=pal900290@okhdfcbank&pn=BrewVerse&am=${grandTotal}&cu=INR`;
+            } else if (method.includes("CARDS")) {
+                showModal('cardStage');
+            } else if (method.includes("WALLETS")) {
+                showModal('walletStage');
             }
+        }
+
+        function showModal(id) {
+            const modal = document.getElementById('paymentModal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('active'), 10);
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function startLoading() {
+            const stages = ['qrStage', 'cardStage', 'walletStage'];
+            stages.forEach(s => document.getElementById(s).style.display = 'none');
+            document.getElementById('loadingStage').style.display = 'block';
+            const status = document.getElementById('statusText');
+            
+            setTimeout(() => { status.innerText = "Verifying Account..."; }, 1500);
+            setTimeout(() => { status.innerText = "Finalizing Order..."; }, 3000);
+            setTimeout(() => {
+                localStorage.removeItem('brewverse_cart');
+                window.location.href = "CONFIRM_ORDER.html";
+            }, 4500);
         }
 
         function selectMethod(el) {
             document.querySelectorAll('.method-item').forEach(m => m.classList.remove('active'));
             el.classList.add('active');
-            if(navigator.vibrate) navigator.vibrate(25);
         }
-
-        // --- 3. MAGNETIC JS ANIMATION ---
-        document.addEventListener('mousemove', (e) => {
-            const items = document.querySelectorAll('.method-item');
-            items.forEach(item => {
-                const rect = item.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
-                const dist = Math.hypot(x, y);
-                
-                if (dist < 120) {
-                    item.style.transform = `translate(${x * 0.12}px, ${y * 0.12}px)`;
-                } else {
-                    item.style.transform = `translate(0, 0)`;
-                }
-            });
-        });
 
         window.onload = init;
     </script>
