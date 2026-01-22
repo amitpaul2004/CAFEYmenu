@@ -210,16 +210,57 @@
     color: #000;
     transform: scale(0.9);
 }
-    </style>
+/* --- CONTENT BLUR LOGIC --- */
+/* Everything inside this wrapper will blur when the modal is open */
+#main-content-wrapper {
+    transition: filter 0.5s cubic-bezier(0.4, 0, 0.2, 1), transform 0.5s ease;
+}
+
+/* This class is toggled via JavaScript */
+.content-is-blurred {
+    filter: blur(15px) grayscale(40%); /* High intensity blur */
+    transform: scale(0.98); /* Subtle shrink to add depth */
+    pointer-events: none; /* Prevent clicking background items while blurred */
+}
+
+/* Ensure the modal stays sharp while background blurs */
+.img-modal {
+    z-index: 9999; 
+}
+/* --- TRANSITION ANIMATION --- */
+.page-exit-active {
+    pointer-events: none;
+}
+
+/* The expanding circle that masks the screen */
+.cart-transition-overlay {
+    position: fixed;
+    bottom: 35px; /* Matches cart button position */
+    right: 25px;
+    width: 70px;
+    height: 70px;
+    background: var(--accent);
+    border-radius: 50%;
+    z-index: 10000;
+    transform: scale(0);
+    transition: transform 0.6s cubic-bezier(0.7, 0, 0.3, 1);
+}
+
+.cart-transition-overlay.grow {
+    transform: scale(50); /* Grows to cover the entire screen */
+}    
+</style>
 </head>
 <body>
 
     <div class="bg-fixed"></div>
 
-    <a href="Cart.html" id="floating-cart">
-        <i class="bi bi-cart-fill"></i>
-        <div class="badge" id="cart-count">0</div>
-    </a>
+   <div id="floating-cart" onclick="navigateToCart()">
+    <i class="bi bi-cart-fill"></i>
+    <div class="badge" id="cart-count">0</div>
+</div>
+
+<div class="cart-transition-overlay" id="transitionCircle"></div>
 
 <div class="img-modal" id="imgModal" onclick="closeLight()">
     <div class="modal-content" onclick="event.stopPropagation()">
@@ -388,6 +429,22 @@ function closeLight() {
         } else {
             render();
         }
+        function navigateToCart() {
+    const circle = document.getElementById('transitionCircle');
+    const cartBtn = document.getElementById('floating-cart');
+    
+    // Add haptic feedback
+    if(navigator.vibrate) navigator.vibrate([30, 50]);
+    
+    // Start animation
+    circle.classList.add('grow');
+    cartBtn.style.opacity = '0';
+    
+    // Redirect after the animation covers the screen
+    setTimeout(() => {
+        window.location.href = "Cart.html";
+    }, 500);
+}
     </script>
 </body>
 </html>
