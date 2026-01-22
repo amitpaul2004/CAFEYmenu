@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Success | BrewVerse Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;800&family=Pacifico&display=swap" rel="stylesheet">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --accent: #c9a66b;
+            --neon-green: #00ff88;
+            --bg: #010101;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        body { 
+            margin: 0; background: var(--bg); color: #fff; 
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            height: 100vh; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            perspective: 1000px;
+        }
+
+        /* --- VORTEX BACKGROUND --- */
+        #canvas-vortex { position: fixed; inset: 0; z-index: -1; filter: blur(1px); }
+
+        /* --- THE 3D FLOATING CARD --- */
+        .card-container {
+            width: 88%; max-width: 400px;
+            transform-style: preserve-3d;
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(201, 166, 107, 0.2);
+            border-radius: 45px;
+            padding: 40px 25px;
+            text-align: center;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8), inset 0 0 30px rgba(201, 166, 107, 0.05);
+            animation: cardFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* --- NEON PULSE CHECK --- */
+        .check-circle {
+            width: 90px; height: 90px; border-radius: 50%;
+            border: 3px solid var(--neon-green);
+            margin: 0 auto 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; color: var(--neon-green);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+            animation: checkPulse 2s infinite;
+        }
+
+        @keyframes checkPulse {
+            0% { transform: scale(1); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(0, 255, 136, 0.5); }
+            100% { transform: scale(1); box-shadow: 0 0 10px rgba(0, 255, 136, 0.2); }
+        }
+
+        /* --- RECEPTION BANNER --- */
+        .reception-notice {
+            background: rgba(201, 166, 107, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 15px; border-radius: 12px;
+            margin: 25px 0; font-size: 0.85rem;
+            line-height: 1.5; color: #ddd;
+            text-align: left;
+        }
+
+        .order-id-label { font-size: 0.65rem; letter-spacing: 4px; opacity: 0.5; text-transform: uppercase; }
+        .order-id-val { font-size: 1.8rem; font-weight: 800; color: var(--accent); margin: 5px 0; font-family: monospace; text-shadow: 0 0 15px rgba(201, 166, 107, 0.3); }
+
+        /* --- ACTION BUTTONS --- */
+        .btn-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 25px; }
+        .btn {
+            border: none; padding: 18px; border-radius: 20px;
+            font-weight: 800; font-size: 0.9rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+        }
+
+        .btn-shot { background: var(--glass); color: #fff; border: 1px solid var(--border); }
+        .btn-home { background: #fff; color: #000; box-shadow: 0 10px 25px rgba(255,255,255,0.1); }
+        .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
+        .btn:active { transform: scale(0.96); }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas-vortex"></canvas>
+
+    <div class="card-container" id="parallaxCard">
+        <div class="glass-card" id="screenshotArea">
+            
+            <div class="check-circle">
+                <i class="bi bi-check-lg"></i>
+            </div>
+
+            <h1 style="font-family:'Pacifico'; font-size: 2.2rem; margin:0;">Success!</h1>
+            
+            <div class="reception-notice">
+                <i class="bi bi-geo-alt-fill" style="color:var(--accent);"></i>
+                Go to <b>Reception</b> and check and conform your order details.
+            </div>
+
+            <div class="order-id-label">Confirmation ID</div>
+            <div class="order-id-val" id="orderID">#BWV-000000</div>
+
+            <div class="btn-stack">
+                <button class="btn btn-shot" onclick="takeCapture()">
+                    <i class="bi bi-camera-fill"></i> SCREENSHOT
+                </button>
+                <a href="index.html" class="btn btn-home">
+                    BACK TO MENU <i class="bi bi-house-door-fill"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Dynamic ID Generation
+        document.getElementById('orderID').innerText = `#BWV-${Math.floor(100000 + Math.random() * 899999)}`;
+
+        // 2. Parallax 3D Effect
+        const card = document.getElementById('parallaxCard');
+        document.addEventListener('mousemove', (e) => {
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 20;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 20;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+
+        // 3. Gold Vortex Background
+        const canvas = document.getElementById('canvas-vortex');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function initCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.1;
+                this.velocity = Math.random() * 1 + 0.2;
+                this.angle = Math.random() * Math.PI * 2;
+                this.color = Math.random() > 0.5 ? '#c9a66b' : '#333';
+            }
+            update() {
+                this.angle += 0.005;
+                this.x += Math.cos(this.angle) * this.velocity;
+                this.y += Math.sin(this.angle) * this.velocity;
+                if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for(let i=0; i<150; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.fillStyle = 'rgba(1, 1, 1, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        initCanvas(); animate();
+        window.addEventListener('resize', initCanvas);
+
+        // 4. Advanced Screenshot Logic
+        function takeCapture() {
+            const btn = document.querySelector('.btn-shot');
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> PROCESSING...';
+            
+            html2canvas(document.getElementById('screenshotArea'), {
+                backgroundColor: "#010101",
+                scale: 3, // Ultra-high resolution
+                borderRadius: 45
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `BrewVerse_Receipt_${Date.now()}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                btn.innerHTML = '<i class="bi bi-check2-circle"></i> SAVED TO GALLERY';
+                setTimeout(() => btn.innerHTML = '<i class="bi bi-camera-fill"></i> SCREENSHOT', 3000);
+            });
+        }
+
+        if(navigator.vibrate) navigator.vibrate([100, 30, 100]);
+    </script>
+</body>
+</html>
