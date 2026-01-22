@@ -243,7 +243,7 @@
             burst.style.cssText = `position:fixed; top:${this.getBoundingClientRect().top + 32}px; left:${this.getBoundingClientRect().left + 32}px; width:10px; height:10px; background:var(--accent-gold); border-radius:50%; z-index:10000; pointer-events:none;`;
             document.body.appendChild(burst);
             burst.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(300)', opacity: 1 }], { duration: 600, easing: 'ease-in' });
-            setTimeout(() => { window.location.href = "Cart.html"; }, 500);
+            setTimeout(() => { window.location.href = "cart.html"; }, 500);
         });
 
         // Bean Follower
