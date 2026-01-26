@@ -3,204 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Executive Admin | BrewVerse Pro</title>
+    <title>Executive Terminal | BrewVerse Elite</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
             --accent: #c9a66b;
             --bg: #020202;
-            --glass: rgba(255, 255, 255, 0.03);
+            --glass: rgba(255, 255, 255, 0.04);
             --border: rgba(255, 255, 255, 0.08);
-            --danger: #ff4444;
             --success: #00ff88;
+            --danger: #ff4444;
         }
 
         body {
             margin: 0; background: var(--bg); color: #fff;
-            font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh;
-            /* ADVANCED BACKGROUND DESIGN */
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(201, 166, 107, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(85, 68, 34, 0.2) 0px, transparent 50%),
-                url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover; background-attachment: fixed; background-position: center;
-        }
-
-        body::before {
-            content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: -1;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh; overflow-x: hidden;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                        url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
         }
 
         /* --- NAVIGATION --- */
         nav {
-            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
-            backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 1000; background: rgba(2,2,2,0.7);
+            padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(25px); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000; background: rgba(0,0,0,0.6);
         }
 
-        /* --- EXPORT & FILTER AREA --- */
-        .filter-group { display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 5px 15px; border-radius: 15px; border: 1px solid var(--border); }
-        .filter-group input { background: none; border: none; color: #fff; font-family: inherit; font-size: 0.8rem; outline: none; }
-        .filter-group label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.5; }
+        .brand-container { line-height: 1; }
+        .subtitle { font-size: 0.6rem; letter-spacing: 4px; color: var(--accent); opacity: 0.8; text-transform: uppercase; margin-left: 5px; }
 
-        /* --- HIDDEN SETTINGS MENU --- */
-        .settings-container { position: relative; }
-        .settings-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--border); background: var(--glass); color: #fff; cursor: pointer; transition: 0.3s; }
-        .settings-btn:hover { transform: rotate(90deg); color: var(--accent); }
+        .nav-right { display: flex; gap: 20px; align-items: center; }
 
-        .settings-dropdown {
-            position: absolute; top: 60px; right: 0; width: 220px; 
-            background: #111; border: 1px solid var(--border); border-radius: 20px;
-            padding: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            display: none; transform-origin: top right; animation: popIn 0.3s ease;
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed; right: -400px; top: 0; bottom: 0; width: 350px;
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(40px);
+            border-left: 1px solid var(--border); z-index: 2000;
+            padding: 40px 30px; transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+            box-shadow: -20px 0 50px rgba(0,0,0,0.8);
+            overflow-y: auto;
         }
-        .settings-dropdown.active { display: block; }
+        .sidebar.active { right: 0; }
 
-        /* --- CARDS & GRID --- */
+        .chart-container { background: var(--glass); border-radius: 20px; padding: 15px; margin: 25px 0; border: 1px solid var(--border); }
+
+        /* --- GRID --- */
         .dashboard { padding: 40px; max-width: 1400px; margin: 0 auto; }
-        .order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
-        
-        .card {
-            background: var(--glass); border: 1px solid var(--border); border-radius: 30px;
-            padding: 25px; backdrop-filter: blur(15px); transition: 0.4s;
-            animation: slideUp 0.5s ease forwards;
+        .order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+
+        .order-card {
+            background: var(--glass); border: 1px solid var(--border); border-radius: 30px; padding: 25px;
+            backdrop-filter: blur(15px); transition: 0.4s;
         }
-        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+        .order-card:hover { border-color: var(--accent); transform: translateY(-8px); background: rgba(255,255,255,0.06); }
 
         /* --- BUTTONS --- */
-        .btn-danger { width: 100%; padding: 12px; border: none; border-radius: 12px; background: rgba(255,68,68,0.1); color: var(--danger); font-weight: 800; cursor: pointer; transition: 0.3s; }
-        .btn-danger:hover { background: var(--danger); color: #fff; }
+        .btn-pass { background: var(--success); color: #000; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 5px; }
+        .btn-csv { background: var(--accent); color: #000; border: none; width: 100%; padding: 15px; border-radius: 15px; font-weight: 800; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-clear { background: rgba(255, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); width: 100%; padding: 12px; border-radius: 15px; font-weight: 800; cursor: pointer; margin-top: 20px; transition: 0.3s; }
+        .btn-clear:hover { background: var(--danger); color: #fff; box-shadow: 0 0 20px rgba(255,68,68,0.3); }
 
-        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .settings-trigger { width: 45px; height: 45px; border-radius: 50%; background: var(--glass); display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); transition: 0.3s; }
+        .settings-trigger:hover { background: var(--accent); color: #000; transform: rotate(90deg); }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div style="font-family: 'Pacifico'; font-size: 1.8rem; color: var(--accent);">BrewVerse Admin</div>
-        
-        <div style="display: flex; gap: 15px; align-items: center;">
-            <div class="filter-group">
-                <label>From</label>
-                <input type="date" id="dateStart">
-                <label>To</label>
-                <input type="date" id="dateEnd">
-                <button onclick="exportFilteredCSV()" style="background:var(--accent); border:none; border-radius:8px; padding:5px 12px; font-weight:800; cursor:pointer;">EXPORT</button>
-            </div>
+    <div class="sidebar" id="sidebar">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="margin: 0; font-weight: 800; color: var(--accent);">Control Panel</h2>
+            <i class="bi bi-x-lg" onclick="toggleSidebar()" style="cursor: pointer;"></i>
+        </div>
 
-            <div class="settings-container">
-                <button class="settings-btn" onclick="toggleSettings()"><i class="bi bi-gear-fill"></i></button>
-                <div class="settings-dropdown" id="settingsMenu">
-                    <p style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 10px;">SYSTEM SETTINGS</p>
-                    <button class="btn-danger" onclick="clearAllHistory()">
-                        <i class="bi bi-trash3-fill"></i> CLEAR ALL HISTORY
-                    </button>
-                    <p style="font-size: 0.6rem; opacity: 0.3; margin-top: 15px; text-align: center;">V1.4 Elite Terminal</p>
-                </div>
+        <div class="chart-container">
+            <div style="font-size: 0.6rem; opacity: 0.5; margin-bottom: 10px; letter-spacing: 2px;">PERFORMANCE INSIGHTS</div>
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <button class="btn-csv" onclick="exportMasterLog()">
+            <i class="bi bi-file-earmark-arrow-down-fill"></i> EXPORT REPORTS
+        </button>
+
+        <div style="margin-top: 50px; border-top: 1px solid var(--border); padding-top: 30px;">
+            <h3 style="font-size: 0.8rem; color: var(--danger); letter-spacing: 2px;">FACTORY RESET</h3>
+            <p style="font-size: 0.7rem; opacity: 0.5; line-height: 1.5;">Wipe all current orders, sales history, and analytics data permanently.</p>
+            <button class="btn-clear" onclick="clearAllHistory()">
+                <i class="bi bi-exclamation-triangle-fill"></i> RESET ALL RECORDS
+            </button>
+        </div>
+    </div>
+
+    <nav>
+        <div class="brand-container">
+            <div style="font-family: 'Pacifico'; font-size: 1.8rem; color: var(--accent);">BrewVerse</div>
+            <div class="subtitle">Premium Kitchen Terminal</div>
+        </div>
+        
+        <div class="nav-right">
+            <div style="text-align: right;">
+                <div style="font-size: 0.55rem; opacity: 0.5; letter-spacing: 2px;">TOTAL SALES</div>
+                <div id="totalRevenue" style="font-size: 1.2rem; font-weight: 800; color: var(--success);">₹0</div>
+            </div>
+            <div class="settings-trigger" onclick="toggleSidebar()">
+                <i class="bi bi-gear-fill"></i>
             </div>
         </div>
     </nav>
 
     <div class="dashboard">
-        <div style="margin-bottom: 30px;">
-            <h2 style="margin:0;">Pending Orders</h2>
-            <p style="opacity:0.5; font-size: 0.8rem;">Current kitchen queue</p>
-        </div>
-        
         <div id="orderGrid" class="order-grid"></div>
-        <div id="emptyMsg" style="text-align:center; padding:100px; opacity:0.2; display:none;">
-            <i class="bi bi-cup-straw" style="font-size: 4rem;"></i>
-            <h3>No Active Orders</h3>
+        <div id="emptyState" style="text-align:center; margin-top: 120px; display: none;">
+            <i class="bi bi-wind" style="font-size: 4rem; opacity: 0.1;"></i>
+            <h2 style="opacity: 0.2; font-weight: 300; letter-spacing: 2px;">No Active Orders</h2>
         </div>
     </div>
 
     <script>
-        // --- SETTINGS TOGGLE ---
-        function toggleSettings() {
-            document.getElementById('settingsMenu').classList.toggle('active');
-        }
+        let myChart = null;
 
-        // --- MASTER LOG CLEARING ---
-        function clearAllHistory() {
-            if(confirm("DANGER: This will permanently delete all sales records. Proceed?")) {
-                localStorage.removeItem('brewverse_master_log');
-                localStorage.removeItem('admin_orders');
-                alert("Database Reset Successful.");
-                location.reload();
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            if (document.getElementById('sidebar').classList.contains('active')) {
+                updateChart();
             }
         }
 
-        // --- FILTERED EXPORT ---
-        function exportFilteredCSV() {
-            const start = document.getElementById('dateStart').value;
-            const end = document.getElementById('dateEnd').value;
-            const log = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
-
-            if (!start || !end) return alert("Please select a Start and End date.");
-
-            const filtered = log.filter(entry => {
-                // Convert DD/MM/YYYY to YYYY-MM-DD for comparison
-                const parts = entry.date.split('/');
-                const entryDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                return entryDate >= start && entryDate <= end;
-            });
-
-            if (filtered.length === 0) return alert("No records found for these dates.");
-
-            let csv = "Date,Time,Order ID,Details,Amount,Method\n";
-            filtered.forEach(r => {
-                csv += `${r.date},${r.time},${r.id},"${r.details}",${r.amount},${r.method}\n`;
-            });
-
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `BrewVerse_Report_${start}_to_${end}.csv`;
-            a.click();
-        }
-
-        // --- KITCHEN QUEUE LOGIC ---
-        function loadQueue() {
+        function updateDashboard() {
             const grid = document.getElementById('orderGrid');
             const orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-            
+            const masterLog = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
+
+            // Update Revenue
+            const total = masterLog.reduce((sum, r) => sum + r.amount, 0);
+            document.getElementById('totalRevenue').innerText = `₹${total}`;
+
             if (orders.length === 0) {
                 grid.innerHTML = "";
-                document.getElementById('emptyMsg').style.display = "block";
-                return;
-            }
-
-            document.getElementById('emptyMsg').style.display = "none";
-            grid.innerHTML = orders.map((o, i) => `
-                <div class="card">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                        <b style="color:var(--accent)">${o.id}</b>
-                        <small style="opacity:0.4">${o.time}</small>
-                    </div>
-                    ${o.items.map(it => `<div style="font-size:0.9rem; margin-bottom:5px;">• ${it.name} (x${it.quantity})</div>`).join('')}
-                    <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div style="font-weight:800">₹${o.total}</div>
-                            <div style="font-size:0.6rem; opacity:0.5; text-transform:uppercase">${o.method}</div>
+                document.getElementById('emptyState').style.display = "block";
+            } else {
+                document.getElementById('emptyState').style.display = "none";
+                grid.innerHTML = orders.map((o, i) => `
+                    <div class="order-card" style="animation: fadeInUp 0.5s ease forwards; animation-delay: ${i*0.05}s">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                            <span style="color:var(--accent); font-weight:800; font-family: monospace;">${o.id}</span>
+                            <span style="font-size:0.65rem; opacity:0.4;">${o.time}</span>
                         </div>
-                        <button onclick="passOrder(${i})" style="background:var(--success); border:none; padding:8px 15px; border-radius:10px; font-weight:800; cursor:pointer;">DONE</button>
+                        <div style="margin-bottom:20px;">
+                            ${o.items.map(item => `<div style="font-size:0.85rem; margin-bottom:6px; display: flex; justify-content: space-between;">
+                                <span>${item.name}</span>
+                                <b style="color:var(--accent)">x${item.quantity}</b>
+                            </div>`).join('')}
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 18px; border: 1px solid var(--border);">
+                            <div>
+                                <div style="font-weight:800; font-size: 1.1rem;">₹${o.total}</div>
+                                <div style="font-size:0.6rem; color:var(--accent); text-transform:uppercase; font-weight: 800;">${o.method}</div>
+                            </div>
+                            <button class="btn-pass" onclick="passOrder(${i})">DONE <i class="bi bi-check2"></i></button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
 
-        function passOrder(index) {
+        function passOrder(idx) {
             let orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-            orders.splice(index, 1);
+            orders.splice(idx, 1);
             localStorage.setItem('admin_orders', JSON.stringify(orders));
-            loadQueue();
+            if(navigator.vibrate) navigator.vibrate(40);
+            updateDashboard();
         }
 
-        window.onload = loadQueue;
-        window.addEventListener('storage', loadQueue);
+        // --- NEW RESET LOGIC ---
+        function clearAllHistory() {
+            const confirmed = confirm("Are you sure? This will clear the Kitchen Queue AND the entire Sales History.");
+            if (confirmed) {
+                // Clear Kitchen Queue
+                localStorage.removeItem('admin_orders');
+                // Clear Permanent Sales Log
+                localStorage.removeItem('brewverse_master_log');
+                
+                if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                
+                alert("Terminal Reset Successful.");
+                location.reload(); // Refresh to reset UI and Chart
+            }
+        }
+
+        function updateChart() {
+            const log = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
+            const dailyData = {};
+            log.forEach(r => { dailyData[r.date] = (dailyData[r.date] || 0) + r.amount; });
+
+            const labels = Object.keys(dailyData);
+            const data = Object.values(dailyData);
+
+            if (myChart) myChart.destroy();
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        borderColor: '#c9a66b',
+                        backgroundColor: 'rgba(201, 166, 107, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#c9a66b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 9 } } },
+                        x: { grid: { display: false }, ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 9 } } }
+                    }
+                }
+            });
+        }
+
+        function exportMasterLog() {
+            const log = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
+            if (log.length === 0) { alert("Nothing to export!"); return; }
+
+            const headers = ["Date", "Time", "Order ID", "Items", "Total Paid", "Method"];
+            const csvRows = [headers.join(",")];
+
+            log.forEach(r => {
+                const detailsEscaped = `"${r.details.replace(/"/g, '""')}"`; 
+                const row = [r.date, r.time, r.id, detailsEscaped, r.amount, r.method];
+                csvRows.push(row.join(","));
+            });
+
+            const blob = new Blob([csvRows.join("\n")], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `BrewVerse_Report_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`;
+            link.click();
+        }
+
+        window.addEventListener('storage', updateDashboard);
+        window.onload = updateDashboard;
     </script>
 </body>
 </html>
