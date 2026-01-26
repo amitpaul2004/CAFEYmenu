@@ -25,20 +25,28 @@
             overflow-x: hidden;
         }
 
-        /* --- STICKY TOP NAVIGATION --- */
+        /* --- NAVIGATION --- */
         .top-nav {
             position: fixed; top: 0; width: 100%; z-index: 1000;
-            padding: 20px 40px; display: flex; justify-content: center; align-items: center;
+            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
             backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
             box-sizing: border-box; background: rgba(0,0,0,0.4);
         }
 
+        .back-dashboard {
+            display: flex; align-items: center; gap: 10px; background: var(--glass);
+            padding: 10px 20px; border-radius: 15px; color: #fff; text-decoration: none;
+            font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+        .back-dashboard:hover { background: var(--accent); color: #000; }
+
         .search-bar {
             background: var(--glass); border: 1px solid var(--border);
             padding: 10px 25px; border-radius: 100px; display: flex; align-items: center;
-            gap: 15px; width: 400px; transition: 0.4s;
+            gap: 15px; width: 350px; transition: 0.4s;
         }
-        .search-bar:focus-within { width: 500px; border-color: var(--accent); box-shadow: 0 0 20px var(--glow); }
+        .search-bar:focus-within { width: 450px; border-color: var(--accent); box-shadow: 0 0 20px var(--glow); }
         .search-bar input { background: none; border: none; color: #fff; outline: none; width: 100%; font-family: inherit; }
 
         /* --- FLOATING CART --- */
@@ -53,31 +61,18 @@
             border: 2px solid rgba(255,255,255,0.2);
         }
         .floating-cart:hover { transform: scale(1.1) rotate(-5deg); background: #fff; }
+        .cart-badge { position: absolute; top: -10px; right: -10px; background: #ff3366; color: #fff; font-size: 0.75rem; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--bg); }
 
-        .cart-badge {
-            position: absolute; top: -10px; right: -10px;
-            background: #ff3366; color: #fff; font-size: 0.75rem;
-            font-weight: 800; width: 28px; height: 28px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            border: 3px solid var(--bg);
-        }
-
-        /* --- HERO SECTION --- */
+        /* --- UI COMPONENTS --- */
         header { padding: 140px 20px 60px; text-align: center; }
         header h1 { font-family: 'Pacifico'; font-size: 4rem; color: var(--accent); margin: 0; text-shadow: 0 0 30px rgba(201, 166, 107, 0.4); }
 
-        /* --- MENU LAYOUT --- */
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 100px; }
-        
-        .category-header {
-            font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--accent);
-            margin: 60px 0 30px; letter-spacing: 5px; display: flex; align-items: center; gap: 20px;
-        }
+        .category-header { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--accent); margin: 60px 0 30px; letter-spacing: 5px; display: flex; align-items: center; gap: 20px; }
         .category-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
 
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
 
-        /* --- ANIMATED MENU CARD --- */
         .menu-card {
             background: var(--glass); backdrop-filter: blur(15px);
             border: 1px solid var(--border); border-radius: 35px;
@@ -86,29 +81,16 @@
             opacity: 0; transform: translateY(40px);
         }
         .menu-card.reveal { opacity: 1; transform: translateY(0); }
-        .menu-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-10px) scale(1.02);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
+        .menu-card:hover { border-color: var(--accent); transform: translateY(-10px); background: rgba(255, 255, 255, 0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
 
-        .item-name { font-size: 1.2rem; font-weight: 800; margin-bottom: 5px; }
-        .item-price { color: var(--accent); font-weight: 800; font-size: 1.3rem; }
+        .item-name { font-size: 1.1rem; font-weight: 800; margin-bottom: 5px; }
+        .item-price { color: var(--accent); font-weight: 800; font-size: 1.2rem; }
 
-        .action-btn {
-            background: var(--accent); color: #000; border: none;
-            padding: 10px 20px; border-radius: 12px; font-weight: 800;
-            cursor: pointer; transition: 0.3s;
-        }
+        .action-btn { background: var(--accent); color: #000; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; }
         .action-btn:hover { background: #fff; transform: scale(1.05); }
 
         .pizza-size-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .size-btn {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            color: #fff; padding: 10px; border-radius: 12px; font-size: 0.75rem;
-            cursor: pointer; transition: 0.3s; font-weight: 500;
-        }
+        .size-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; padding: 10px; border-radius: 12px; font-size: 0.75rem; cursor: pointer; transition: 0.3s; }
         .size-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(201,166,107,0.1); }
 
         .bump { transform: scale(1.3); }
@@ -118,11 +100,12 @@
 <body>
 
     <nav class="top-nav">
+        <a href="index.html" class="back-dashboard"><i class="bi bi-house-door-fill"></i> <span>DASHBOARD</span></a>
         <div class="search-bar">
             <i class="bi bi-search" style="color: var(--accent);"></i>
             <input type="text" id="searchInput" placeholder="Search Pizzas, Burgers, Pastas..." onkeyup="searchMenu()">
         </div>
-    </nav>
+        <div style="width: 150px;"></div> </nav>
 
     <a href="cart.html" class="floating-cart" id="floatingCart">
         <i class="bi bi-bag-heart-fill"></i>
@@ -135,100 +118,125 @@
     </header>
 
     <div class="container">
-        <div class="category-header">PIZZAS</div>
+        <div class="category-header">🍕 PIZZAS</div>
         <div class="menu-grid" id="pizza-grid"></div>
 
-        <div class="category-header">BURGERS</div>
+        <div class="category-header">🍔 BURGERS</div>
         <div class="menu-grid" id="burger-grid"></div>
 
-        <div class="category-header">PASTAS</div>
+        <div class="category-header">🥪 SANDWICHES</div>
+        <div class="menu-grid" id="sandwich-grid"></div>
+
+        <div class="category-header">🍝 PASTA</div>
         <div class="menu-grid" id="pasta-grid"></div>
+
+        <div class="category-header">🍚 RICE & NOODLES</div>
+        <div class="menu-grid" id="rice-grid"></div>
+
+        <div class="category-header">🍛 INDIAN MAIN COURSE</div>
+        <div class="menu-grid" id="indian-grid"></div>
     </div>
 
     <script>
-        const pizzas = [
-            { name: "Margherita Pizza", reg: 179, med: 279 },
-            { name: "Farm Fresh Veggie", reg: 209, med: 329 },
-            { name: "Paneer Tikka Pizza", reg: 239, med: 359 },
-            { name: "Cheese Burst Pizza", reg: 249, med: 379 }
-        ];
-
-        const burgers = [
-            { name: "Classic Veg Burger", price: 129 },
-            { name: "Paneer Crunch Burger", price: 159 },
-            { name: "Crispy Chicken Burger", price: 179 }
-        ];
-
-        const pastas = [
-            { name: "White Sauce Pasta", price: 179 },
-            { name: "Red Sauce Pasta", price: 169 },
-            { name: "Pesto Pasta (Veg)", price: 209 }
-        ];
+        const menuData = {
+            pizzas: [
+                { name: "Margherita Pizza", reg: 179, med: 279 },
+                { name: "Farm Fresh Veggie Pizza", reg: 209, med: 329 },
+                { name: "Paneer Tikka Pizza", reg: 239, med: 359 },
+                { name: "Cheese Burst Pizza", reg: 249, med: 379 },
+                { name: "Tandoori Paneer Pizza", reg: 249, med: 379 },
+                { name: "Cheese & Corn Pizza", reg: 219, med: 339 },
+                { name: "Mushroom Delight Pizza", reg: 229, med: 349 },
+                { name: "Spicy Mexican Veg Pizza", reg: 239, med: 369 },
+                { name: "BBQ Chicken Pizza (NV)", reg: 269, med: 399 },
+                { name: "Pepperoni Chicken Pizza (NV)", reg: 279, med: 419 }
+            ],
+            burgers: [
+                { name: "Classic Veg Burger", price: 129 },
+                { name: "Paneer Crunch Burger", price: 159 },
+                { name: "Cheese Veg Burger", price: 149 },
+                { name: "Veggie Supreme Burger", price: 169 },
+                { name: "Aloo Tikki Burger", price: 119 },
+                { name: "Crispy Chicken Burger (NV)", price: 179 },
+                { name: "Chicken Cheese Burger (NV)", price: 199 }
+            ],
+            sandwiches: [
+                { name: "Grilled Cheese Sandwich", price: 139 },
+                { name: "Veg Club Sandwich", price: 169 },
+                { name: "Veg Grilled Sandwich", price: 149 },
+                { name: "Cheese Corn Sandwich", price: 159 },
+                { name: "Paneer Tikka Sandwich", price: 179 },
+                { name: "Chicken Club Sandwich (NV)", price: 199 },
+                { name: "Chicken Tikka Sandwich (NV)", price: 209 }
+            ],
+            pastas: [
+                { name: "White Sauce Pasta", price: 179 },
+                { name: "Red Sauce Pasta", price: 169 },
+                { name: "Pink Sauce Pasta", price: 189 },
+                { name: "Cheesy Alfredo Pasta", price: 199 },
+                { name: "Pesto Pasta (Veg)", price: 209 },
+                { name: "Peri-Peri Pasta", price: 199 },
+                { name: "Chicken White Sauce (NV)", price: 229 },
+                { name: "Chicken Red Sauce (NV)", price: 219 }
+            ],
+            rice: [
+                { name: "Veg Fried Rice", price: 169 },
+                { name: "Hakka Noodles", price: 169 },
+                { name: "Schezwan Fried Rice", price: 179 },
+                { name: "Schezwan Noodles", price: 179 },
+                { name: "Paneer Fried Rice", price: 189 },
+                { name: "Paneer Hakka Noodles", price: 189 },
+                { name: "Egg Fried Rice (NV)", price: 189 },
+                { name: "Egg Hakka Noodles (NV)", price: 189 },
+                { name: "Chicken Fried Rice (NV)", price: 229 },
+                { name: "Chicken Hakka Noodles (NV)", price: 229 }
+            ],
+            indian: [
+                { name: "Paneer Butter Masala + 2 Naan", price: 249 },
+                { name: "Kadai Paneer + 2 Roti", price: 239 },
+                { name: "Dal Makhani + Jeera Rice", price: 219 },
+                { name: "Chicken Butter Masala + 2 Naan (NV)", price: 299 },
+                { name: "Kadai Chicken + 2 Roti (NV)", price: 289 }
+            ]
+        };
 
         function renderMenu() {
+            // Render Pizzas
             const pGrid = document.getElementById('pizza-grid');
-            const bGrid = document.getElementById('burger-grid');
-            const pastaGrid = document.getElementById('pasta-grid');
-
-            pizzas.forEach(p => {
-                pGrid.innerHTML += `
-                    <div class="menu-card">
-                        <div class="item-name">${p.name}</div>
-                        <div class="pizza-size-grid">
-                            <button class="size-btn" onclick="addToCart('${p.name} (Reg)', ${p.reg})">REGULAR ₹${p.reg}</button>
-                            <button class="size-btn" onclick="addToCart('${p.name} (Med)', ${p.med})">MEDIUM ₹${p.med}</button>
-                        </div>
-                    </div>
-                `;
+            menuData.pizzas.forEach(p => {
+                pGrid.innerHTML += `<div class="menu-card"><div class="item-name">${p.name}</div><div class="pizza-size-grid"><button class="size-btn" onclick="addToCart('${p.name} (Reg)', ${p.reg})">REG ₹${p.reg}</button><button class="size-btn" onclick="addToCart('${p.name} (Med)', ${p.med})">MED ₹${p.med}</button></div></div>`;
             });
 
-            burgers.forEach(b => {
-                bGrid.innerHTML += `
-                    <div class="menu-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <div class="item-name">${b.name}</div>
-                                <div class="item-price">₹${b.price}</div>
-                            </div>
-                            <button class="action-btn" onclick="addToCart('${b.name}', ${b.price})">ADD</button>
-                        </div>
-                    </div>
-                `;
-            });
+            // Generic Helper for other categories
+            const renderCategory = (data, gridId) => {
+                const grid = document.getElementById(gridId);
+                data.forEach(item => {
+                    grid.innerHTML += `<div class="menu-card"><div style="display:flex; justify-content:space-between; align-items:center;"><div><div class="item-name">${item.name}</div><div class="item-price">₹${item.price}</div></div><button class="action-btn" onclick="addToCart('${item.name}', ${item.price})">ADD</button></div></div>`;
+                });
+            };
 
-            pastas.forEach(pas => {
-                pastaGrid.innerHTML += `
-                    <div class="menu-card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <div class="item-name">${pas.name}</div>
-                                <div class="item-price">₹${pas.price}</div>
-                            </div>
-                            <button class="action-btn" onclick="addToCart('${pas.name}', ${pas.price})">ADD</button>
-                        </div>
-                    </div>
-                `;
-            });
-            handleScroll(); 
+            renderCategory(menuData.burgers, 'burger-grid');
+            renderCategory(menuData.sandwiches, 'sandwich-grid');
+            renderCategory(menuData.pastas, 'pasta-grid');
+            renderCategory(menuData.rice, 'rice-grid');
+            renderCategory(menuData.indian, 'indian-grid');
+
+            handleScroll();
         }
 
         function searchMenu() {
             const query = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.menu-card');
-            cards.forEach(card => {
+            document.querySelectorAll('.menu-card').forEach(card => {
                 const title = card.querySelector('.item-name').innerText.toLowerCase();
                 card.classList.toggle('hidden', !title.includes(query));
             });
         }
 
         function handleScroll() {
-            const cards = document.querySelectorAll('.menu-card');
-            cards.forEach((card, index) => {
+            document.querySelectorAll('.menu-card').forEach((card, index) => {
                 const rect = card.getBoundingClientRect();
                 if (rect.top < window.innerHeight - 50) {
-                    setTimeout(() => {
-                        card.classList.add('reveal');
-                    }, index * 100); 
+                    setTimeout(() => card.classList.add('reveal'), index * 30);
                 }
             });
         }
@@ -238,12 +246,9 @@
             cart[name] = cart[name] ? { ...cart[name], quantity: cart[name].quantity + 1 } : { name, price, quantity: 1 };
             localStorage.setItem('brewverse_cart', JSON.stringify(cart));
             updateCartCount();
-            
-            // Floating Cart Animation
             const cartEl = document.getElementById('floatingCart');
             cartEl.classList.add('bump');
             setTimeout(() => cartEl.classList.remove('bump'), 300);
-
             if(navigator.vibrate) navigator.vibrate(50);
         }
 
@@ -254,10 +259,7 @@
         }
 
         window.addEventListener('scroll', handleScroll);
-        window.onload = () => {
-            renderMenu();
-            updateCartCount();
-        };
+        window.onload = () => { renderMenu(); updateCartCount(); };
     </script>
 </body>
 </html>
