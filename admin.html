@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Command Center | BrewVerse Elite</title>
+    <title>Executive Admin | BrewVerse Pro</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&display=swap" rel="stylesheet">
     
@@ -13,218 +13,194 @@
             --bg: #020202;
             --glass: rgba(255, 255, 255, 0.03);
             --border: rgba(255, 255, 255, 0.08);
+            --danger: #ff4444;
             --success: #00ff88;
-            --card-glow: rgba(201, 166, 107, 0.1);
         }
 
         body {
             margin: 0; background: var(--bg); color: #fff;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh; overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% -20%, #1a1a1a 0%, #020202 80%);
+            font-family: 'Plus Jakarta Sans', sans-serif; min-height: 100vh;
+            /* ADVANCED BACKGROUND DESIGN */
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(201, 166, 107, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(85, 68, 34, 0.2) 0px, transparent 50%),
+                url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; background-attachment: fixed; background-position: center;
         }
 
-        /* --- TOP NAV & STATS --- */
+        body::before {
+            content: ''; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: -1;
+        }
+
+        /* --- NAVIGATION --- */
         nav {
             padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
-            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 1000; background: rgba(2,2,2,0.8);
+            backdrop-filter: blur(20px); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000; background: rgba(2,2,2,0.7);
         }
 
-        .revenue-pill {
-            background: var(--glass); border: 1px solid var(--border);
-            padding: 8px 20px; border-radius: 100px; display: flex; align-items: center; gap: 10px;
-        }
+        /* --- EXPORT & FILTER AREA --- */
+        .filter-group { display: flex; align-items: center; gap: 10px; background: var(--glass); padding: 5px 15px; border-radius: 15px; border: 1px solid var(--border); }
+        .filter-group input { background: none; border: none; color: #fff; font-family: inherit; font-size: 0.8rem; outline: none; }
+        .filter-group label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.5; }
 
-        /* --- DASHBOARD LAYOUT --- */
-        .dashboard-container { padding: 40px; max-width: 1400px; margin: 0 auto; }
+        /* --- HIDDEN SETTINGS MENU --- */
+        .settings-container { position: relative; }
+        .settings-btn { width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--border); background: var(--glass); color: #fff; cursor: pointer; transition: 0.3s; }
+        .settings-btn:hover { transform: rotate(90deg); color: var(--accent); }
+
+        .settings-dropdown {
+            position: absolute; top: 60px; right: 0; width: 220px; 
+            background: #111; border: 1px solid var(--border); border-radius: 20px;
+            padding: 15px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            display: none; transform-origin: top right; animation: popIn 0.3s ease;
+        }
+        .settings-dropdown.active { display: block; }
+
+        /* --- CARDS & GRID --- */
+        .dashboard { padding: 40px; max-width: 1400px; margin: 0 auto; }
+        .order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; }
         
-        .header-main { margin-bottom: 40px; animation: fadeInDown 0.8s ease; }
-        .header-main h1 { font-family: 'Pacifico'; font-size: 2.5rem; color: var(--accent); margin: 0; }
-
-        .order-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px; perspective: 1000px;
+        .card {
+            background: var(--glass); border: 1px solid var(--border); border-radius: 30px;
+            padding: 25px; backdrop-filter: blur(15px); transition: 0.4s;
+            animation: slideUp 0.5s ease forwards;
         }
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
 
-        /* --- ADVANCED ORDER CARD --- */
-        .order-card {
-            background: var(--glass); border: 1px solid var(--border);
-            border-radius: 30px; padding: 25px; position: relative;
-            backdrop-filter: blur(20px); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-style: preserve-3d;
-            animation: cardSlideUp 0.6s ease-out forwards;
-        }
+        /* --- BUTTONS --- */
+        .btn-danger { width: 100%; padding: 12px; border: none; border-radius: 12px; background: rgba(255,68,68,0.1); color: var(--danger); font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .btn-danger:hover { background: var(--danger); color: #fff; }
 
-        .order-card:hover {
-            border-color: var(--accent);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 20px var(--card-glow);
-            transform: translateY(-10px) rotateX(5deg);
-        }
-
-        .card-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-        .order-tag { font-family: monospace; font-weight: 800; color: var(--accent); font-size: 1.2rem; }
-        .time-tag { font-size: 0.7rem; opacity: 0.4; }
-
-        .dish-item { 
-            display: flex; align-items: center; gap: 10px; margin-bottom: 8px; 
-            padding: 10px; background: rgba(255,255,255,0.02); border-radius: 12px;
-        }
-        .qty-circle { 
-            width: 24px; height: 24px; background: var(--accent); color: #000;
-            border-radius: 50%; font-size: 0.7rem; font-weight: 800;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .footer-details {
-            margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        /* --- ACTION BUTTONS --- */
-        .btn-pass {
-            background: var(--success); color: #000; border: none;
-            padding: 12px 20px; border-radius: 15px; font-weight: 800;
-            cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 8px;
-        }
-        .btn-pass:hover { background: #fff; transform: scale(1.05); }
-
-        .btn-export {
-            background: var(--accent); color: #000; border: none;
-            padding: 10px 25px; border-radius: 100px; font-weight: 800;
-            cursor: pointer; transition: 0.3s;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes cardSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        .exit-anim { transform: scale(0.5) translateX(500px) !important; opacity: 0 !important; transition: 0.5s !important; }
-
-        #emptyState { text-align: center; margin-top: 100px; opacity: 0.2; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <nav>
-        <div style="font-family: 'Pacifico'; font-size: 1.5rem; color: var(--accent);">BrewVerse Admin</div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <div class="revenue-pill">
-                <i class="bi bi-graph-up-arrow" style="color: var(--success);"></i>
-                <span>Today: <b id="totalRevenue">₹0</b></span>
+        <div style="font-family: 'Pacifico'; font-size: 1.8rem; color: var(--accent);">BrewVerse Admin</div>
+        
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <div class="filter-group">
+                <label>From</label>
+                <input type="date" id="dateStart">
+                <label>To</label>
+                <input type="date" id="dateEnd">
+                <button onclick="exportFilteredCSV()" style="background:var(--accent); border:none; border-radius:8px; padding:5px 12px; font-weight:800; cursor:pointer;">EXPORT</button>
             </div>
-            <button class="btn-export" onclick="exportCSV()"><i class="bi bi-download"></i> EXPORT</button>
+
+            <div class="settings-container">
+                <button class="settings-btn" onclick="toggleSettings()"><i class="bi bi-gear-fill"></i></button>
+                <div class="settings-dropdown" id="settingsMenu">
+                    <p style="font-size: 0.7rem; opacity: 0.5; margin-bottom: 10px;">SYSTEM SETTINGS</p>
+                    <button class="btn-danger" onclick="clearAllHistory()">
+                        <i class="bi bi-trash3-fill"></i> CLEAR ALL HISTORY
+                    </button>
+                    <p style="font-size: 0.6rem; opacity: 0.3; margin-top: 15px; text-align: center;">V1.4 Elite Terminal</p>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div class="dashboard-container">
-        <header class="header-main">
-            <h1>Live Kitchen Queue</h1>
-            <p style="opacity: 0.5; margin-top: 5px;">Manage incoming orders and track performance</p>
-        </header>
-
-        <div id="orderGrid" class="order-grid">
-            </div>
-
-        <div id="emptyState" style="display: none;">
-            <i class="bi bi-inbox" style="font-size: 4rem;"></i>
-            <h2>Kitchen is Quiet</h2>
+    <div class="dashboard">
+        <div style="margin-bottom: 30px;">
+            <h2 style="margin:0;">Pending Orders</h2>
+            <p style="opacity:0.5; font-size: 0.8rem;">Current kitchen queue</p>
+        </div>
+        
+        <div id="orderGrid" class="order-grid"></div>
+        <div id="emptyMsg" style="text-align:center; padding:100px; opacity:0.2; display:none;">
+            <i class="bi bi-cup-straw" style="font-size: 4rem;"></i>
+            <h3>No Active Orders</h3>
         </div>
     </div>
 
     <script>
-        function updateDashboard() {
-            const grid = document.getElementById('orderGrid');
-            const orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-            const masterLog = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
-            
-            // Calculate Today's Revenue
-            const today = new Date().toLocaleDateString();
-            const revenue = masterLog
-                .filter(entry => entry.date === today)
-                .reduce((sum, entry) => sum + entry.amount, 0);
-            document.getElementById('totalRevenue').innerText = `₹${revenue}`;
+        // --- SETTINGS TOGGLE ---
+        function toggleSettings() {
+            document.getElementById('settingsMenu').classList.toggle('active');
+        }
 
-            if (orders.length === 0) {
-                grid.innerHTML = "";
-                document.getElementById('emptyState').style.display = "block";
-                return;
+        // --- MASTER LOG CLEARING ---
+        function clearAllHistory() {
+            if(confirm("DANGER: This will permanently delete all sales records. Proceed?")) {
+                localStorage.removeItem('brewverse_master_log');
+                localStorage.removeItem('admin_orders');
+                alert("Database Reset Successful.");
+                location.reload();
             }
-
-            document.getElementById('emptyState').style.display = "none";
-            grid.innerHTML = "";
-
-            orders.forEach((order, index) => {
-                const card = document.createElement('div');
-                card.className = 'order-card';
-                card.id = `card-${index}`;
-                card.style.animationDelay = `${index * 0.1}s`;
-
-                const itemsHTML = order.items.map(i => `
-                    <div class="dish-item">
-                        <div class="qty-circle">${i.quantity}</div>
-                        <span>${i.name}</span>
-                    </div>
-                `).join('');
-
-                card.innerHTML = `
-                    <div class="card-header">
-                        <span class="order-tag">${order.id}</span>
-                        <span class="time-tag">${order.time}</span>
-                    </div>
-                    <div class="card-body">
-                        ${itemsHTML}
-                    </div>
-                    <div class="footer-details">
-                        <div>
-                            <div style="font-size: 1.1rem; font-weight: 800;">₹${order.total}</div>
-                            <div style="font-size: 0.6rem; opacity: 0.5; text-transform: uppercase;">${order.method}</div>
-                        </div>
-                        <button class="btn-pass" onclick="passOrder(${index})">
-                            PASS <i class="bi bi-arrow-right-short"></i>
-                        </button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
         }
 
-        function passOrder(idx) {
-            const card = document.getElementById(`card-${idx}`);
-            card.classList.add('exit-anim');
-            
-            if(navigator.vibrate) navigator.vibrate(40);
-
-            setTimeout(() => {
-                let orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-                orders.splice(idx, 1);
-                localStorage.setItem('admin_orders', JSON.stringify(orders));
-                updateDashboard();
-            }, 500);
-        }
-
-        function exportCSV() {
+        // --- FILTERED EXPORT ---
+        function exportFilteredCSV() {
+            const start = document.getElementById('dateStart').value;
+            const end = document.getElementById('dateEnd').value;
             const log = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
-            if(log.length === 0) return alert("No sales data found!");
 
-            let csv = "Date,Order ID,Items,Total,Method\n";
-            log.forEach(r => {
-                csv += `${r.date},${r.id},"${r.details}",${r.amount},${r.method}\n`;
+            if (!start || !end) return alert("Please select a Start and End date.");
+
+            const filtered = log.filter(entry => {
+                // Convert DD/MM/YYYY to YYYY-MM-DD for comparison
+                const parts = entry.date.split('/');
+                const entryDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                return entryDate >= start && entryDate <= end;
+            });
+
+            if (filtered.length === 0) return alert("No records found for these dates.");
+
+            let csv = "Date,Time,Order ID,Details,Amount,Method\n";
+            filtered.forEach(r => {
+                csv += `${r.date},${r.time},${r.id},"${r.details}",${r.amount},${r.method}\n`;
             });
 
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `BrewVerse_Sales_${new Date().toLocaleDateString()}.csv`;
+            a.download = `BrewVerse_Report_${start}_to_${end}.csv`;
             a.click();
         }
 
-        // Auto-refresh when customer orders
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'admin_orders' || e.key === 'brewverse_master_log') updateDashboard();
-        });
+        // --- KITCHEN QUEUE LOGIC ---
+        function loadQueue() {
+            const grid = document.getElementById('orderGrid');
+            const orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+            
+            if (orders.length === 0) {
+                grid.innerHTML = "";
+                document.getElementById('emptyMsg').style.display = "block";
+                return;
+            }
 
-        window.onload = updateDashboard;
+            document.getElementById('emptyMsg').style.display = "none";
+            grid.innerHTML = orders.map((o, i) => `
+                <div class="card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                        <b style="color:var(--accent)">${o.id}</b>
+                        <small style="opacity:0.4">${o.time}</small>
+                    </div>
+                    ${o.items.map(it => `<div style="font-size:0.9rem; margin-bottom:5px;">• ${it.name} (x${it.quantity})</div>`).join('')}
+                    <div style="margin-top:20px; padding-top:15px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-weight:800">₹${o.total}</div>
+                            <div style="font-size:0.6rem; opacity:0.5; text-transform:uppercase">${o.method}</div>
+                        </div>
+                        <button onclick="passOrder(${i})" style="background:var(--success); border:none; padding:8px 15px; border-radius:10px; font-weight:800; cursor:pointer;">DONE</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function passOrder(index) {
+            let orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+            orders.splice(index, 1);
+            localStorage.setItem('admin_orders', JSON.stringify(orders));
+            loadQueue();
+        }
+
+        window.onload = loadQueue;
+        window.addEventListener('storage', loadQueue);
     </script>
 </body>
 </html>
