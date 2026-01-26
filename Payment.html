@@ -240,6 +240,21 @@
         }
 
         window.onload = init;
+
+        // 1. CAPTURE THE DATA BEFORE DELETING
+    const cart = JSON.parse(localStorage.getItem('brewverse_cart'));
+    const subtotal = Object.values(cart).reduce((s, i) => s + (i.price * i.quantity), 0);
+    const gst = Math.round(subtotal * 0.05);
+    
+    const summary = {
+        items: Object.values(cart),
+        subtotal: subtotal,
+        gst: gst,
+        total: subtotal + gst
+    };
+    
+    // 2. SAVE AS LAST ORDER
+    localStorage.setItem('last_order_summary', JSON.stringify(summary));
     </script>
 </body>
 </html>
