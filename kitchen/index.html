@@ -21,7 +21,7 @@
             margin: 0; background: var(--bg); color: #fff;
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh; overflow-x: hidden;
-            /* HIGH-END BACKGROUND IMAGE */
+            /* MOODY CINEMATIC BACKGROUND */
             background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
                         url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
@@ -29,7 +29,7 @@
             background-attachment: fixed;
         }
 
-        /* --- FLOATING GOLD PARTICLES CANVAS --- */
+        /* --- GOLD DUST VORTEX --- */
         #dust-canvas {
             position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5;
         }
@@ -58,6 +58,7 @@
             border: 1px solid var(--border);
             border-radius: 40px; padding: 30px; position: relative;
             transform-style: preserve-3d;
+            /* Entrance Animation: Left to Right with Rotation */
             animation: slideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             transition: 0.4s ease;
@@ -94,7 +95,7 @@
         }
         .serve-btn:hover { background: var(--neon-ready); transform: translateY(3px); box-shadow: 0 5px 15px rgba(0,255,204,0.2); }
 
-        /* EXIT ANIMATION */
+        /* EXIT ANIMATION: Fast Slide Out to Right */
         .card-out { transform: translateX(300%) rotate(20deg) !important; opacity: 0 !important; transition: 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) !important; }
 
         #empty-view { text-align: center; margin-top: 150px; opacity: 0.3; }
@@ -129,7 +130,7 @@
         let isAudioReady = false;
         let timers = {};
 
-        // --- 1. DING SOUND ---
+        // --- 1. DING SOUND ENGINE ---
         function playDing() {
             if (!isAudioReady) return;
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -170,12 +171,17 @@
                 const card = document.createElement('div');
                 card.className = 'k-card';
                 card.id = `order-${i}`;
+                
+                // Track start time for each order
                 if(!timers[o.id]) timers[o.id] = Date.now();
 
                 const items = o.items.map(item => `<div class="item-row"><span>${item.name}</span><b>x${item.quantity}</b></div>`).join('');
 
                 card.innerHTML = `
-                    <div class="card-header"><span class="order-id">${o.id}</span><span class="timer-badge" id="timer-${o.id}">00:00</span></div>
+                    <div class="card-header">
+                        <span class="order-id">${o.id}</span>
+                        <span class="timer-badge" id="timer-${o.id}">00:00</span>
+                    </div>
                     <div class="item-list">${items}</div>
                     <button class="serve-btn" onclick="serveOrder(${i})">DONE <i class="bi bi-check2-circle"></i></button>
                 `;
@@ -200,6 +206,8 @@
         function serveOrder(idx) {
             const card = document.getElementById(`order-${idx}`);
             card.classList.add('card-out');
+            if(navigator.vibrate) navigator.vibrate(50);
+
             setTimeout(() => {
                 let orders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
                 orders.splice(idx, 1);
@@ -208,7 +216,7 @@
             }, 700);
         }
 
-        // --- 4. DUST PARTICLES ENGINE ---
+        // --- 4. GOLD DUST ENGINE ---
         const canvas = document.getElementById('dust-canvas');
         const ctx = canvas.getContext('2d');
         let pts = [];
@@ -231,6 +239,7 @@
         window.addEventListener('resize', initP);
         initP(); drawP();
 
+        // STORAGE SYNC
         window.addEventListener('storage', (e) => {
             if(e.key === 'kitchen_orders') {
                 const oldL = JSON.parse(e.oldValue || "[]").length;

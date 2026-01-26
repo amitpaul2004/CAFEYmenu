@@ -52,7 +52,7 @@
 
         .chart-container { background: var(--glass); border-radius: 20px; padding: 15px; margin: 25px 0; border: 1px solid var(--border); }
 
-        /* --- GRID --- */
+        /* --- DASHBOARD GRID --- */
         .dashboard { padding: 40px; max-width: 1400px; margin: 0 auto; }
         .order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
 
@@ -140,7 +140,7 @@
             const orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
             const masterLog = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
 
-            // Update Revenue
+            // Update Total Revenue
             const total = masterLog.reduce((sum, r) => sum + r.amount, 0);
             document.getElementById('totalRevenue').innerText = `₹${total}`;
 
@@ -156,10 +156,11 @@
                             <span style="font-size:0.65rem; opacity:0.4;">${o.time}</span>
                         </div>
                         <div style="margin-bottom:20px;">
-                            ${o.items.map(item => `<div style="font-size:0.85rem; margin-bottom:6px; display: flex; justify-content: space-between;">
-                                <span>${item.name}</span>
-                                <b style="color:var(--accent)">x${item.quantity}</b>
-                            </div>`).join('')}
+                            ${o.items.map(item => `
+                                <div style="font-size:0.85rem; margin-bottom:6px; display: flex; justify-content: space-between;">
+                                    <span>${item.name}</span>
+                                    <b style="color:var(--accent)">x${item.quantity}</b>
+                                </div>`).join('')}
                         </div>
                         <div style="display:flex; justify-content:space-between; align-items:center; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 18px; border: 1px solid var(--border);">
                             <div>
@@ -173,35 +174,31 @@
             }
         }
 
-       function passOrder(idx) {
-    let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-    let kitchenOrders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
-    
-    // Move the order to kitchen storage
-    const completedOrder = adminOrders.splice(idx, 1)[0];
-    kitchenOrders.push(completedOrder);
-    
-    // Update both storage items
-    localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
-    localStorage.setItem('kitchen_orders', JSON.stringify(kitchenOrders));
-    
-    if(navigator.vibrate) navigator.vibrate(40);
-    updateDashboard(); // Refresh admin view
-}
+        function passOrder(idx) {
+            let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+            let kitchenOrders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
+            
+            const completedOrder = adminOrders.splice(idx, 1)[0];
+            kitchenOrders.push(completedOrder);
+            
+            localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
+            localStorage.setItem('kitchen_orders', JSON.stringify(kitchenOrders));
+            
+            if(navigator.vibrate) navigator.vibrate(40);
+            updateDashboard();
+        }
 
-        // --- NEW RESET LOGIC ---
         function clearAllHistory() {
             const confirmed = confirm("Are you sure? This will clear the Kitchen Queue AND the entire Sales History.");
             if (confirmed) {
-                // Clear Kitchen Queue
                 localStorage.removeItem('admin_orders');
-                // Clear Permanent Sales Log
+                localStorage.removeItem('kitchen_orders'); // Also clear kitchen queue
                 localStorage.removeItem('brewverse_master_log');
                 
                 if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
                 
-                alert("Terminal Reset Successful.");
-                location.reload(); // Refresh to reset UI and Chart
+                alert("Terminal Factory Reset Successful.");
+                location.reload();
             }
         }
 
