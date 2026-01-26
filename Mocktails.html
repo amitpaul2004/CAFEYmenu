@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mocktails | BrewVerse Elite</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #c9a66b;
+            --bg: #020202;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --glow: rgba(201, 166, 107, 0.3);
+            --neon-blue: #00d2ff; /* Added for refreshing feel */
+        }
+
+        body {
+            margin: 0; background: var(--bg); color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh; overflow-x: hidden;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1536935338788-846bb9981813?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+
+        /* --- NAVIGATION --- */
+        .top-nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(25px); border-bottom: 1px solid var(--border);
+            box-sizing: border-box; background: rgba(0,0,0,0.4);
+        }
+
+        .back-dashboard {
+            display: flex; align-items: center; gap: 10px; background: var(--glass);
+            padding: 10px 20px; border-radius: 15px; color: #fff; text-decoration: none;
+            font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+        .back-dashboard:hover { background: var(--accent); color: #000; }
+
+        .search-bar {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 10px 25px; border-radius: 100px; display: flex; align-items: center;
+            gap: 15px; width: 300px; transition: 0.4s;
+        }
+        .search-bar:focus-within { width: 400px; border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 210, 255, 0.2); }
+        .search-bar input { background: none; border: none; color: #fff; outline: none; width: 100%; font-family: inherit; }
+
+        /* --- FLOATING CART --- */
+        .floating-cart {
+            position: fixed; bottom: 40px; right: 40px; z-index: 1001;
+            background: var(--accent); color: #000;
+            width: 70px; height: 70px; border-radius: 25px;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; font-size: 1.8rem;
+            box-shadow: 0 15px 35px rgba(201, 166, 107, 0.4);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        .floating-cart:hover { transform: scale(1.1); background: #fff; }
+        .cart-badge { position: absolute; top: -10px; right: -10px; background: #ff3366; color: #fff; font-size: 0.75rem; font-weight: 800; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid var(--bg); }
+
+        /* --- UI COMPONENTS --- */
+        header { padding: 140px 20px 60px; text-align: center; }
+        header h1 { font-family: 'Pacifico'; font-size: 4rem; color: var(--accent); margin: 0; text-shadow: 0 0 30px var(--glow); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 100px; }
+        .category-header { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--accent); margin: 60px 0 30px; letter-spacing: 5px; display: flex; align-items: center; gap: 20px; }
+        .category-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+
+        .menu-card {
+            background: var(--glass); backdrop-filter: blur(15px);
+            border: 1px solid var(--border); border-radius: 35px;
+            padding: 30px; position: relative; opacity: 0; transform: translateY(40px);
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .menu-card.reveal { opacity: 1; transform: translateY(0); }
+        .menu-card:hover { border-color: var(--accent); transform: translateY(-10px); background: rgba(255, 255, 255, 0.05); }
+
+        .item-row { display: flex; justify-content: space-between; align-items: center; }
+        .item-name { font-size: 1.1rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .scan-trigger { cursor: pointer; color: var(--accent); font-size: 1.2rem; transition: 0.3s; }
+        .scan-trigger:hover { transform: scale(1.2) rotate(10deg); color: var(--neon-blue); }
+
+        .item-price { color: var(--accent); font-weight: 800; font-size: 1.3rem; }
+        .action-btn { background: var(--accent); color: #000; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 20px; }
+        .action-btn:hover { background: #fff; transform: scale(1.02); }
+
+        /* --- SCAN MODAL --- */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px); z-index: 3000;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        
+        .preview-card {
+            background: #000; border: 2px solid var(--accent); border-radius: 40px; padding: 40px; text-align: center; width: 320px;
+            box-shadow: 0 0 50px rgba(201,166,107,0.2); transform: scale(0.9); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .preview-card { transform: scale(1); }
+        .qr-box { border-radius: 20px; border: 1px solid var(--border); overflow: hidden; position: relative; margin-bottom: 20px; background: #fff; }
+        .qr-box img { width: 100%; display: block; }
+        .side-text { position: absolute; left: 10px; top: 50%; transform: translateY(-50%) rotate(-90deg); font-size: 0.6rem; letter-spacing: 3px; color: #000; opacity: 0.4; transform-origin: left; width: 150px; text-align: center; }
+
+        .close-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); padding: 12px 25px; border-radius: 100px; cursor: pointer; font-weight: 800; margin-top: 20px; width: 100%; transition: 0.3s; }
+        .close-btn:hover { background: var(--accent); color: #000; }
+
+        .bump { transform: scale(1.3); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <nav class="top-nav">
+        <a href="index.html" class="back-dashboard"><i class="bi bi-house-door-fill"></i> <span>DASHBOARD</span></a>
+        <div class="search-bar">
+            <i class="bi bi-search" style="color: var(--accent);"></i>
+            <input type="text" id="searchInput" placeholder="Search Mocktails..." onkeyup="searchMenu()">
+        </div>
+        <div style="width: 100px;"></div>
+    </nav>
+
+    <a href="cart.html" class="floating-cart" id="floatingCart">
+        <i class="bi bi-cup-straw"></i><span class="cart-badge" id="cartBadge">0</span>
+    </a>
+
+    <div id="scanModal" class="modal-overlay" onclick="closeModal()">
+        <div class="preview-card" onclick="event.stopPropagation()">
+            <div class="qr-box">
+                <img src="" alt="Mocktail Preview" id="modalImg">
+                <div class="side-text">PREVIEW MODE</div>
+            </div>
+            <h2 id="modalTitle" style="font-family:'Pacifico'; color:var(--accent); margin:10px 0;">Drink Name</h2>
+            <p style="font-size:0.7rem; letter-spacing:2px; opacity:0.5; margin-bottom:20px;">TAP & SCAN TO SEE MOCKTAIL</p>
+            <button class="close-btn" onclick="closeModal()">✕ CLOSE VIEW</button>
+        </div>
+    </div>
+
+    <header>
+        <h1>Mocktails</h1>
+        <p style="letter-spacing: 5px; opacity: 0.5;">CHILLED & REFRESHING ELIXIRS</p>
+    </header>
+
+    <div class="container">
+        <div class="category-header">MOCKTAIL SPECIALS</div>
+        <div class="menu-grid" id="mocktail-grid"></div>
+    </div>
+
+    <script>
+        // Update 'img' property with your actual image filenames in 'images/' folder
+        const mocktailData = [
+            { name: "Blue Lagoon", price: 149, img: "blue_lagoon_qr.png" },
+            { name: "Virgin Mojito", price: 159, img: "virgin_mojito_qr.png" },
+            { name: "Watermelon Cooler", price: 149, img: "watermelon_qr.png" },
+            { name: "Strawberry Fizz", price: 159, img: "strawberry_fizz_qr.png" },
+            { name: "Kiwi Sparkler", price: 169, img: "kiwi_qr.png" },
+            { name: "Classic Iced Tea", price: 129, img: "iced_tea_qr.png" },
+            { name: "Peach Iced Tea", price: 149, img: "peach_tea_qr.png" },
+            { name: "Green Apple Mojito", price: 169, img: "green_apple_qr.png" },
+            { name: "Blueberry Mojito", price: 179, img: "blueberry_qr.png" },
+            { name: "Orange Mint Cooler", price: 149, img: "orange_mint_qr.png" },
+            { name: "Pineapple Punch", price: 159, img: "pineapple_qr.png" },
+            { name: "Mango Mint Cooler", price: 149, img: "mango_mint_qr.png" },
+            { name: "Litchi Cooler", price: 169, img: "litchi_qr.png" },
+            { name: "Rose Lemonade", price: 149, img: "rose_qr.png" },
+            { name: "Cucumber Mint Cooler", price: 139, img: "cucumber_qr.png" },
+            { name: "Passion Fruit Fizz", price: 189, img: "passion_fruit_qr.png" },
+            { name: "Kala Khatta Cooler", price: 139, img: "kala_khatta_qr.png" },
+            { name: "Fruit Punch", price: 169, img: "fruit_punch_qr.png" },
+            { name: "Ginger Lemon Fizz", price: 149, img: "ginger_lemon_qr.png" },
+            { name: "Café Special", price: 199, img: "special_qr.png" }
+        ];
+
+        function renderMenu() {
+            const grid = document.getElementById('mocktail-grid');
+            mocktailData.forEach((item, index) => {
+                grid.innerHTML += `
+                    <div class="menu-card">
+                        <div class="item-row">
+                            <div class="item-name">
+                                ${item.name} 
+                                <i class="bi bi-qr-code scan-trigger" onclick="openModal('${item.name}', '${item.img}')" title="TAP & SCAN TO SEE FOOD"></i>
+                            </div>
+                            <div class="item-price">₹${item.price}</div>
+                        </div>
+                        <button class="action-btn" onclick="addToCart('${item.name}', ${item.price})">ADD TO TRAY</button>
+                    </div>`;
+            });
+            handleScroll();
+        }
+
+        function openModal(name, img) {
+            document.getElementById('modalTitle').innerText = name;
+            // Assumes images are in 'images/' folder
+            document.getElementById('modalImg').src = 'images/' + img;
+            document.getElementById('scanModal').classList.add('active');
+            if(navigator.vibrate) navigator.vibrate(40);
+        }
+
+        function closeModal() { document.getElementById('scanModal').classList.remove('active'); }
+
+        function searchMenu() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.menu-card').forEach(card => {
+                const title = card.querySelector('.item-name').innerText.toLowerCase();
+                card.classList.toggle('hidden', !title.includes(query));
+            });
+        }
+
+        function handleScroll() {
+            document.querySelectorAll('.menu-card').forEach((card, index) => {
+                const rect = card.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 50) {
+                    setTimeout(() => card.classList.add('reveal'), index * 30);
+                }
+            });
+        }
+
+        function addToCart(name, price) {
+            let cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
+            cart[name] = cart[name] ? { ...cart[name], quantity: cart[name].quantity + 1 } : { name, price, quantity: 1 };
+            localStorage.setItem('brewverse_cart', JSON.stringify(cart));
+            updateCartCount();
+            const cartEl = document.getElementById('floatingCart');
+            cartEl.classList.add('bump');
+            setTimeout(() => cartEl.classList.remove('bump'), 300);
+            if(navigator.vibrate) navigator.vibrate(50);
+        }
+
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
+            const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cartBadge').innerText = count;
+        }
+
+        window.addEventListener('scroll', handleScroll);
+        window.onload = () => { renderMenu(); updateCartCount(); };
+    </script>
+</body>
+</html>
