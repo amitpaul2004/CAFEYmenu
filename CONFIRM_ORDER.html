@@ -245,6 +245,43 @@
         loadReceipt();
 
         if(navigator.vibrate) navigator.vibrate([100, 30, 100]);
+
+        // Add this inside your existing script in CONFIRM_ORDER.html
+function sendToAdmin() {
+    const orderData = JSON.parse(localStorage.getItem('last_order_summary')) || {};
+    const adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+    
+    const newOrder = {
+        id: document.getElementById('orderID').innerText,
+        time: new Date().toLocaleTimeString(),
+        items: orderData.items,
+        total: orderData.total,
+        method: localStorage.getItem('last_payment_method') || 'UPI/Online'
+    };
+
+    adminOrders.push(newOrder);
+    localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
+}
+// Call it
+sendToAdmin();
+
+function saveToPermanentLog() {
+    const orderData = JSON.parse(localStorage.getItem('last_order_summary')) || {};
+    const masterLog = JSON.parse(localStorage.getItem('brewverse_master_log')) || [];
+    
+    const record = {
+        date: new Date().toLocaleDateString(), // For date-to-date tracking
+        time: new Date().toLocaleTimeString(),
+        id: document.getElementById('orderID').innerText,
+        details: orderData.items.map(i => `${i.name}(${i.quantity})`).join('; '),
+        amount: orderData.total,
+        method: orderData.method || 'Online'
+    };
+
+    masterLog.push(record);
+    localStorage.setItem('brewverse_master_log', JSON.stringify(masterLog));
+}
+saveToPermanentLog();
     </script>
 </body>
 </html>

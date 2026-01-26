@@ -224,15 +224,30 @@
             if(!show) { modal.classList.remove('active'); setTimeout(() => modal.style.display='none', 400); }
         }
 
-        function startLoading() {
-            showModal('loadingStage');
-            const status = document.getElementById('statusText');
-            setTimeout(() => { status.innerText = "Verifying..."; }, 1500);
-            setTimeout(() => {
-                localStorage.removeItem('brewverse_cart');
-                window.location.href = "CONFIRM_ORDER.html";
-            }, 3000);
-        }
+       function startLoading() {
+    // 1. Identify which payment method is currently active
+    const activeMethod = document.querySelector('.method-item.active span').innerText;
+    
+    // 2. CAPTURE THE DATA
+    const cart = JSON.parse(localStorage.getItem('brewverse_cart'));
+    const subtotal = Object.values(cart).reduce((s, i) => s + (i.price * i.quantity), 0);
+    const gst = Math.round(subtotal * 0.05);
+    
+    const summary = {
+        items: Object.values(cart),
+        subtotal: subtotal,
+        gst: gst,
+        total: subtotal + gst,
+        method: activeMethod // Saves "SCAN QR", "CASH", "CARDS", etc.
+    };
+    
+    // 3. Save for Admin and Success page
+    localStorage.setItem('last_order_summary', JSON.stringify(summary));
+
+    // 4. Clear and Redirect
+    localStorage.removeItem('brewverse_cart');
+    window.location.href = "CONFIRM_ORDER.html";
+    }
 
         function selectMethod(el) {
             document.querySelectorAll('.method-item').forEach(m => m.classList.remove('active'));
