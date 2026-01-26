@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Command | BrewVerse Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #c9a66b;
+            --bg: #020202;
+            --neon-ready: #00ffcc;
+            --glass: rgba(0, 0, 0, 0.45);
+            --card-glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            margin: 0; background: var(--bg); color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh; overflow-x: hidden;
+            /* HIGH-END BACKGROUND IMAGE */
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                        url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* --- FLOATING GOLD PARTICLES CANVAS --- */
+        #dust-canvas {
+            position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.5;
+        }
+
+        /* --- GLASS NAVIGATION --- */
+        nav {
+            padding: 15px 40px; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(25px); border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.3); position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo-box h1 { font-family: 'Pacifico'; font-size: 2.2rem; color: var(--accent); margin: 0; }
+        .logo-box p { font-size: 0.6rem; letter-spacing: 6px; opacity: 0.6; text-transform: uppercase; margin-top: -5px; }
+
+        /* --- KITCHEN GRID --- */
+        .kitchen-container { padding: 40px; max-width: 1600px; margin: 0 auto; position: relative; z-index: 10; }
+        .grid-layout { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+            gap: 30px; perspective: 1000px; 
+        }
+
+        /* --- 3D NEON GLASS CARD --- */
+        .k-card {
+            background: var(--card-glass);
+            backdrop-filter: blur(40px);
+            border: 1px solid var(--border);
+            border-radius: 40px; padding: 30px; position: relative;
+            transform-style: preserve-3d;
+            animation: slideIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            transition: 0.4s ease;
+        }
+
+        @keyframes slideIn { 
+            from { opacity: 0; transform: translateX(-150px) rotateY(-30deg); } 
+            to { opacity: 1; transform: translateX(0) rotateY(0); } 
+        }
+
+        .k-card:hover { 
+            border-color: var(--accent); 
+            background: rgba(255,255,255,0.06);
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .order-id { font-family: 'Orbitron', sans-serif; font-size: 1.4rem; color: var(--accent); }
+        .timer-badge { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; padding: 6px 15px; border-radius: 12px; background: rgba(0,0,0,0.4); color: var(--neon-ready); border: 1px solid rgba(0,255,204,0.3); }
+
+        .item-row { 
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 20px; background: rgba(0,0,0,0.2);
+            border-radius: 18px; margin-bottom: 12px; border: 1px solid var(--border);
+        }
+        .item-row b { color: var(--accent); font-size: 1.1rem; }
+
+        /* --- SERVE ACTION --- */
+        .serve-btn {
+            width: 100%; padding: 20px; border-radius: 22px; border: none;
+            background: #fff; color: #000; font-weight: 800; font-size: 1rem;
+            cursor: pointer; transition: 0.4s; display: flex; align-items: center; justify-content: center; gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .serve-btn:hover { background: var(--neon-ready); transform: translateY(3px); box-shadow: 0 5px 15px rgba(0,255,204,0.2); }
+
+        /* EXIT ANIMATION */
+        .card-out { transform: translateX(300%) rotate(20deg) !important; opacity: 0 !important; transition: 0.8s cubic-bezier(0.45, 0.05, 0.55, 0.95) !important; }
+
+        #empty-view { text-align: center; margin-top: 150px; opacity: 0.3; }
+    </style>
+</head>
+<body>
+
+    <canvas id="dust-canvas"></canvas>
+
+    <nav>
+        <div class="logo-box">
+            <h1>BrewVerse</h1>
+            <p>Master Kitchen Console</p>
+        </div>
+        <div style="display: flex; gap: 20px;">
+            <button class="audio-toggle" id="audioBtn" onclick="initAudio()" style="background:var(--card-glass); border:1px solid var(--border); color:#fff; padding:10px 20px; border-radius:15px; cursor:pointer;">
+                <i class="bi bi-volume-mute-fill"></i> SOUND OFF
+            </button>
+            <div id="activeCounter" style="font-weight: 800; color: var(--accent); border-left: 1px solid var(--border); padding-left: 20px; display:flex; align-items:center;">0 PENDING</div>
+        </div>
+    </nav>
+
+    <div class="kitchen-container">
+        <div id="kitchenGrid" class="grid-layout"></div>
+        <div id="empty-view">
+            <i class="bi bi-cup-hot" style="font-size: 5rem; color:var(--accent); opacity:0.3;"></i>
+            <h2 style="font-weight: 300; letter-spacing: 5px; margin-top: 20px;">KITCHEN CLEAR</h2>
+        </div>
+    </div>
+
+    <script>
+        let isAudioReady = false;
+        let timers = {};
+
+        // --- 1. DING SOUND ---
+        function playDing() {
+            if (!isAudioReady) return;
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(900, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(450, ctx.currentTime + 0.4);
+            g.gain.setValueAtTime(0.1, ctx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+            osc.connect(g); g.connect(ctx.destination);
+            osc.start(); osc.stop(ctx.currentTime + 0.4);
+        }
+
+        function initAudio() {
+            isAudioReady = !isAudioReady;
+            const btn = document.getElementById('audioBtn');
+            btn.innerHTML = isAudioReady ? '<i class="bi bi-volume-up-fill"></i> SOUND LIVE' : '<i class="bi bi-volume-mute-fill"></i> SOUND OFF';
+            if(isAudioReady) playDing();
+        }
+
+        // --- 2. RENDER ORDERS ---
+        function refreshKDS() {
+            const grid = document.getElementById('kitchenGrid');
+            const orders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
+            document.getElementById('activeCounter').innerText = `${orders.length} PENDING`;
+
+            if(orders.length === 0) {
+                grid.innerHTML = "";
+                document.getElementById('empty-view').style.display = "block";
+                return;
+            }
+
+            document.getElementById('empty-view').style.display = "none";
+            grid.innerHTML = "";
+
+            orders.forEach((o, i) => {
+                const card = document.createElement('div');
+                card.className = 'k-card';
+                card.id = `order-${i}`;
+                if(!timers[o.id]) timers[o.id] = Date.now();
+
+                const items = o.items.map(item => `<div class="item-row"><span>${item.name}</span><b>x${item.quantity}</b></div>`).join('');
+
+                card.innerHTML = `
+                    <div class="card-header"><span class="order-id">${o.id}</span><span class="timer-badge" id="timer-${o.id}">00:00</span></div>
+                    <div class="item-list">${items}</div>
+                    <button class="serve-btn" onclick="serveOrder(${i})">DONE <i class="bi bi-check2-circle"></i></button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- 3. LIVE TIMERS ---
+        setInterval(() => {
+            const orders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
+            orders.forEach(o => {
+                const el = document.getElementById(`timer-${o.id}`);
+                if (el && timers[o.id]) {
+                    const diff = Math.floor((Date.now() - timers[o.id]) / 1000);
+                    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+                    const s = (diff % 60).toString().padStart(2, '0');
+                    el.innerText = `${m}:${s}`;
+                }
+            });
+        }, 1000);
+
+        function serveOrder(idx) {
+            const card = document.getElementById(`order-${idx}`);
+            card.classList.add('card-out');
+            setTimeout(() => {
+                let orders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
+                orders.splice(idx, 1);
+                localStorage.setItem('kitchen_orders', JSON.stringify(orders));
+                refreshKDS();
+            }, 700);
+        }
+
+        // --- 4. DUST PARTICLES ENGINE ---
+        const canvas = document.getElementById('dust-canvas');
+        const ctx = canvas.getContext('2d');
+        let pts = [];
+        function initP() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            pts = Array.from({length: 80}, () => ({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                s: Math.random() * 1.5, v: Math.random() * 0.5 + 0.2
+            }));
+        }
+        function drawP() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(201, 166, 107, 0.4)";
+            pts.forEach(p => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+                p.y -= p.v; if(p.y < 0) p.y = canvas.height;
+            });
+            requestAnimationFrame(drawP);
+        }
+        window.addEventListener('resize', initP);
+        initP(); drawP();
+
+        window.addEventListener('storage', (e) => {
+            if(e.key === 'kitchen_orders') {
+                const oldL = JSON.parse(e.oldValue || "[]").length;
+                const newL = JSON.parse(e.newValue || "[]").length;
+                if(newL > oldL) playDing();
+                refreshKDS();
+            }
+        });
+
+        window.onload = refreshKDS;
+    </script>
+</body>
+</html>
