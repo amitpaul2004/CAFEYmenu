@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Display | BrewVerse Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;800&family=Pacifico&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #c9a66b;
+            --bg: #050505;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --ready: #00ff88;
+        }
+
+        body {
+            margin: 0; background: var(--bg); color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh; padding: 40px; overflow-x: hidden;
+            background: radial-gradient(circle at 10% 10%, #1a1510 0%, #050505 100%);
+        }
+
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; }
+        .k-title { font-family: 'Pacifico'; font-size: 2.2rem; color: var(--accent); margin: 0; }
+        .live-tag { background: rgba(255,0,0,0.1); color: #ff4444; padding: 5px 15px; border-radius: 100px; font-size: 0.7rem; font-weight: 800; letter-spacing: 2px; }
+
+        /* --- KITCHEN GRID --- */
+        .kitchen-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* --- LEFT TO RIGHT ANIMATION --- */
+        .kitchen-card {
+            background: var(--card-bg); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 30px;
+            padding: 25px; position: relative;
+            
+            transform: translateX(-150%); opacity: 0;
+            animation: slideInLeft 0.7s cubic-bezier(0.2, 0.8, 0.2, 1.1) forwards;
+        }
+
+        @keyframes slideInLeft {
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .order-head { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; }
+        .id-label { font-family: monospace; font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+
+        .dish-list { list-style: none; padding: 0; margin: 0; }
+        .dish-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font-size: 1.1rem; }
+        .qty-box { background: var(--accent); color: #000; font-weight: 800; padding: 2px 8px; border-radius: 6px; font-size: 0.8rem; }
+
+        .btn-serve {
+            width: 100%; margin-top: 20px; padding: 15px; border-radius: 15px;
+            border: none; background: var(--ready); color: #000; font-weight: 800;
+            cursor: pointer; transition: 0.3s;
+        }
+        .btn-serve:hover { background: #fff; transform: scale(1.02); }
+
+        /* Exit Animation */
+        .exit-right { transform: translateX(200%) !important; opacity: 0 !important; transition: 0.6s ease-in !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1 class="k-title">Kitchen Display</h1>
+            <p style="opacity: 0.5; font-size: 0.8rem;">BrewVerse Pro Live Terminal</p>
+        </div>
+        <div class="live-tag"><i class="bi bi-broadcast"></i> LIVE</div>
+    </header>
+
+    <div id="kitchenGrid" class="kitchen-grid">
+        </div>
+
+    <script>
+        function refreshKitchen() {
+            const grid = document.getElementById('kitchenGrid');
+            const orders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
+            
+            grid.innerHTML = "";
+
+            orders.forEach((order, index) => {
+                const card = document.createElement('div');
+                card.className = 'kitchen-card';
+                card.id = `k-card-${index}`;
+                card.style.animationDelay = `${index * 0.1}s`;
+
+                const itemsHTML = order.items.map(i => `
+                    <li class="dish-row">
+                        <span class="qty-box">${i.quantity}</span>
+                        <span>${i.name}</span>
+                    </li>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="order-head">
+                        <span class="id-label">${order.id}</span>
+                        <span style="opacity: 0.4; font-size: 0.7rem;">${order.time}</span>
+                    </div>
+                    <ul class="dish-list">${itemsHTML}</ul>
+                    <button class="btn-serve" onclick="serveOrder(${index})">
+                        MARK AS READY <i class="bi bi-bell-fill"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function serveOrder(idx) {
+            const card = document.getElementById(`k-card-${idx}`);
+            card.classList.add('exit-right'); // Slides out to the right
+
+            setTimeout(() => {
+                let orders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
+                orders.splice(idx, 1);
+                localStorage.setItem('kitchen_orders', JSON.stringify(orders));
+                refreshKitchen();
+            }, 600);
+        }
+
+        // Real-time listener for "DONE" click on admin.html
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'kitchen_orders') refreshKitchen();
+        });
+
+        window.onload = refreshKitchen;
+    </script>
+</body>
+</html>

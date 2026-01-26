@@ -173,13 +173,21 @@
             }
         }
 
-        function passOrder(idx) {
-            let orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-            orders.splice(idx, 1);
-            localStorage.setItem('admin_orders', JSON.stringify(orders));
-            if(navigator.vibrate) navigator.vibrate(40);
-            updateDashboard();
-        }
+       function passOrder(idx) {
+    let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+    let kitchenOrders = JSON.parse(localStorage.getItem('kitchen_orders')) || [];
+    
+    // Move the order to kitchen storage
+    const completedOrder = adminOrders.splice(idx, 1)[0];
+    kitchenOrders.push(completedOrder);
+    
+    // Update both storage items
+    localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
+    localStorage.setItem('kitchen_orders', JSON.stringify(kitchenOrders));
+    
+    if(navigator.vibrate) navigator.vibrate(40);
+    updateDashboard(); // Refresh admin view
+}
 
         // --- NEW RESET LOGIC ---
         function clearAllHistory() {
