@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cold Beverages | BrewVerse Elite</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&family=Pacifico&family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #c9a66b;
+            --bg: #020202;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.08);
+            --glow: rgba(201, 166, 107, 0.3);
+            --cyan-glow: rgba(0, 255, 255, 0.2);
+        }
+
+        body {
+            margin: 0; background: var(--bg); color: #fff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh; overflow-x: hidden;
+            /* ATMOSPHERIC BACKGROUND */
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.85)), 
+                        url('https://images.unsplash.com/photo-1461023058943-07fcbe16d735?q=80&w=2069&auto=format&fit=crop');
+            background-size: cover; background-position: center; background-attachment: fixed;
+        }
+
+        /* --- DYNAMIC ICE PARTICLE ENGINE --- */
+        #dust-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.3; }
+
+        /* --- NAVIGATION --- */
+        .header { 
+            padding: 25px 30px; position: sticky; top: 0; z-index: 1000; 
+            backdrop-filter: blur(25px); border-bottom: 1px solid var(--border);
+            background: rgba(0,0,0,0.5);
+        }
+
+        .nav-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        
+        .back-dashboard {
+            display: flex; align-items: center; gap: 10px; background: var(--glass);
+            padding: 10px 18px; border-radius: 15px; color: #fff; text-decoration: none;
+            font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; border: 1px solid var(--border);
+            transition: 0.3s;
+        }
+        .back-dashboard:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--glow); }
+
+        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2.2rem; color: var(--accent); }
+
+        .search-bar {
+            background: var(--glass); border: 1px solid var(--border);
+            padding: 12px 25px; border-radius: 100px; display: flex; align-items: center;
+            gap: 15px; width: 100%; box-sizing: border-box; transition: 0.4s;
+        }
+        .search-bar:focus-within { border-color: #00d2ff; box-shadow: 0 0 20px var(--cyan-glow); }
+        .search-bar input { background: none; border: none; color: #fff; outline: none; width: 100%; font-family: inherit; }
+
+        /* --- MENU LAYOUT --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px 120px; position: relative; z-index: 10; }
+        
+        .category-header {
+            font-family: 'Orbitron', sans-serif; font-size: 1rem; color: var(--accent);
+            margin: 40px 0 20px; letter-spacing: 4px; display: flex; align-items: center; gap: 15px;
+        }
+        .category-header::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border), transparent); }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
+
+        .food-item {
+            background: var(--glass); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 40px;
+            padding: 22px; display: flex; align-items: center; gap: 18px;
+            opacity: 0; transform: translateY(30px);
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .food-item.reveal { opacity: 1; transform: translateY(0); }
+        .food-item:hover { border-color: #00d2ff; transform: translateY(-8px); background: rgba(255,255,255,0.06); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+
+        .item-thumb { 
+            width: 90px; height: 90px; border-radius: 25px; object-fit: cover; 
+            border: 1.5px solid var(--border); cursor: pointer; transition: 0.4s;
+        }
+        .item-thumb:hover { transform: scale(1.1); border-color: var(--accent); }
+
+        .item-info { flex-grow: 1; }
+        .item-name { font-weight: 800; font-size: 1.1rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .scan-trigger { cursor: pointer; color: var(--accent); font-size: 1.2rem; transition: 0.3s; opacity: 0.6; }
+        .scan-trigger:hover { opacity: 1; transform: scale(1.2) rotate(10deg); color: #00d2ff; }
+        .item-price { color: var(--accent); font-weight: 800; font-size: 1.3rem; margin-top: 5px; }
+
+        /* --- CONTROLS --- */
+        .qty-wrapper {
+            display: flex; align-items: center; background: rgba(255, 255, 255, 0.05); 
+            border: 1px solid var(--border); border-radius: 20px; 
+            min-width: 45px; height: 45px; justify-content: center; transition: 0.4s;
+        }
+        .qty-wrapper.active { min-width: 105px; background: rgba(201, 166, 107, 0.15); border-color: var(--accent); }
+        .qty-btn { background: none; border: none; color: #fff; width: 35px; font-size: 1.3rem; font-weight: 800; display: none; cursor: pointer; }
+        .qty-wrapper.active .qty-btn { display: block; }
+        .qty-val { color: #fff; font-weight: 800; display: none; text-align: center; flex-grow: 1; }
+        .qty-wrapper.active .qty-val { display: block; }
+        .add-init { color: var(--accent); font-size: 1.8rem; font-weight: 300; cursor: pointer; }
+        .qty-wrapper.active .add-init { display: none; }
+
+        /* --- FLOATING COMPONENTS --- */
+        #floating-cart {
+            position: fixed; bottom: 35px; right: 25px; width: 75px; height: 75px; border-radius: 25px;
+            background: var(--accent); color: #000; 
+            display: flex; align-items: center; justify-content: center; font-size: 2rem; z-index: 1000; 
+            transform: scale(0); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-decoration: none;
+            box-shadow: 0 15px 35px rgba(201, 166, 107, 0.4); border: 2px solid rgba(255,255,255,0.2);
+        }
+        #floating-cart.visible { transform: scale(1); }
+        .badge { position: absolute; top: -10px; right: -10px; background: #ff3366; color: #fff; min-width: 28px; height: 28px; border-radius: 50%; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 3px solid var(--bg); }
+
+        /* --- PREVIEW MODAL --- */
+        .img-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
+            display: none; align-items: center; justify-content: center; z-index: 2000;
+        }
+        .img-modal.active { display: flex; animation: modalFade 0.4s forwards; }
+        .preview-card {
+            background: #000; border: 2px solid var(--accent); border-radius: 45px; padding: 40px; 
+            text-align: center; width: 320px; box-shadow: 0 0 60px rgba(201, 166, 107, 0.3);
+            transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .img-modal.active .preview-card { transform: scale(1); }
+        .modal-image-container { border-radius: 25px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 25px; background: #fff; position: relative; }
+        .modal-image-container img { width: 100%; display: block; }
+        .modal-side-text { position: absolute; left: 10px; top: 50%; transform: translateY(-50%) rotate(-90deg); font-size: 0.6rem; letter-spacing: 3px; color: #000; opacity: 0.4; transform-origin: left; width: 150px; text-align: center; }
+        .modal-close-btn { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid var(--border); padding: 15px 30px; border-radius: 100px; cursor: pointer; font-weight: 800; margin-top: 25px; width: 100%; transition: 0.3s; }
+        
+        @keyframes modalFade { from { opacity: 0; } to { opacity: 1; } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <canvas id="dust-canvas"></canvas>
+
+    <nav class="header">
+        <div class="nav-top">
+            <a href="index.html" class="back-dashboard"><i class="bi bi-house-door-fill"></i> <span>DASHBOARD</span></a>
+            <h1>Cold Beverages</h1>
+            <div style="width: 100px;"></div>
+        </div>
+        <div class="search-bar">
+            <i class="bi bi-search" style="color: var(--accent);"></i>
+            <input type="text" id="searchInput" placeholder="Search chilled favorites..." onkeyup="filterMenu()">
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="category-header">ICED COFFEES</div>
+        <div class="menu-grid" id="coffeeList"></div>
+
+        <div class="category-header">SHAKES</div>
+        <div class="menu-grid" id="shakeList"></div>
+
+        <div class="category-header">COOLERS & FRESH DRINKS</div>
+        <div class="menu-grid" id="coolerList"></div>
+    </div>
+
+    <a href="cart.html" id="floating-cart">
+        <i class="bi bi-snow2"></i>
+        <div class="badge" id="cart-count">0</div>
+    </a>
+
+    <div class="img-modal" id="imgModal" onclick="closeLight()">
+        <div class="preview-card" onclick="event.stopPropagation()">
+            <div class="modal-image-container">
+                <div class="modal-side-text">PREVIEW MODE</div>
+                <img id="fullImg" src="" alt="Beverage Preview">
+            </div>
+            <h2 id="modalName" style="font-family:'Pacifico'; color:var(--accent); margin:10px 0;"></h2>
+            <p style="font-size:0.7rem; letter-spacing:2px; opacity:0.5; margin-bottom:20px;">TAP & SCAN TO SEE REFRESHMENT</p>
+            <button class="modal-close-btn" onclick="closeLight()">✕ CLOSE VIEW</button>
+        </div>
+    </div>
+
+    <script>
+        const coffeeData = [
+            { id: 'c1', name: "Cold Coffee", price: 149, food: "cold_coffee_qr.png" },
+            { id: 'c2', name: "Chocolate Cold Coffee", price: 169, food: "choco_coffee_qr.png" },
+            { id: 'c3', name: "Iced Latte", price: 159, food: "iced_latte_qr.png" },
+            { id: 'c4', name: "Iced Mocha", price: 179, food: "iced_mocha_qr.png" },
+            { id: 'c5', name: "Caramel Cold Coffee", price: 179, food: "caramel_coffee_qr.png" },
+            { id: 'c6', name: "Hazelnut Cold Coffee", price: 189, food: "hazelnut_coffee_qr.png" },
+            { id: 'c7', name: "Iced Americano", price: 139, food: "iced_americano_qr.png" },
+            { id: 'c8', name: "Iced Vanilla Latte", price: 179, food: "vanilla_latte_qr.png" },
+            { id: 'c9', name: "Café Frappe", price: 199, food: "cafe_frappe_qr.png" },
+            { id: 'c10', name: "Chocolate Frappe", price: 219, food: "choco_frappe_qr.png" }
+        ];
+
+        const shakeData = [
+            { id: 'sh1', name: "Oreo Shake", price: 189, food: "oreo_shake_qr.png" },
+            { id: 'sh2', name: "Chocolate Shake", price: 179, food: "choco_shake_qr.png" },
+            { id: 'sh3', name: "Strawberry Shake", price: 169, food: "strawberry_shake_qr.png" },
+            { id: 'sh4', name: "Vanilla Shake", price: 159, food: "vanilla_shake_qr.png" },
+            { id: 'sh5', name: "KitKat Shake", price: 199, food: "kitkat_shake_qr.png" },
+            { id: 'sh6', name: "Brownie Shake", price: 219, food: "brownie_shake_qr.png" },
+            { id: 'sh7', name: "Mango Shake", price: 169, food: "mango_shake_qr.png" },
+            { id: 'sh8', name: "Butterscotch Shake", price: 179, food: "butterscotch_shake_qr.png" },
+            { id: 'sh9', name: "Cold Coco Shake", price: 189, food: "cold_coco_qr.png" },
+            { id: 'sh10', name: "Premium Dry Fruit", price: 229, food: "dryfruit_shake_qr.png" }
+        ];
+
+        const coolerData = [
+            { id: 'col1', name: "Fresh Lime Soda", price: 99, food: "lime_soda_qr.png" },
+            { id: 'col2', name: "Fresh Lime Water", price: 79, food: "lime_water_qr.png" },
+            { id: 'col3', name: "Mint Lemon Cooler", price: 129, food: "mint_cooler_qr.png" },
+            { id: 'col4', name: "Watermelon Juice", price: 119, food: "watermelon_juice_qr.png" },
+            { id: 'col5', name: "Cold Drink", price: 59, food: "cold_drink_qr.png" }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
+
+        function renderCategory(data, listId) {
+            const list = document.getElementById(listId);
+            data.forEach((item) => {
+                const qty = cart[item.id] ? cart[item.id].quantity : 0;
+                const active = qty > 0 ? 'active' : '';
+                const div = document.createElement('div');
+                div.className = 'food-item';
+                div.innerHTML = `
+                    <img src="images/${item.food}" class="item-thumb" onclick="openLight('images/${item.food}', '${item.name}')" onerror="this.src='https://via.placeholder.com/150/111/00d2ff?text=Cold'">
+                    <div class="item-info">
+                        <div class="item-name">${item.name} <i class="bi bi-qr-code scan-trigger" onclick="openLight('images/${item.food}', '${item.name}')"></i></div>
+                        <div class="item-price">₹${item.price}</div>
+                    </div>
+                    <div class="qty-wrapper ${active}" id="wrap-${item.id}">
+                        <button class="qty-btn" onclick="updateQty('${item.id}', -1, '${item.name}', ${item.price}, '${listId}')">-</button>
+                        <div class="add-init" onclick="updateQty('${item.id}', 1, '${item.name}', ${item.price}, '${listId}')">+</div>
+                        <div class="qty-val" id="val-${item.id}">${qty}</div>
+                        <button class="qty-btn" onclick="updateQty('${item.id}', 1, '${item.name}', ${item.price}, '${listId}')">+</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // Particle Engine
+        const canvas = document.getElementById('dust-canvas');
+        const ctx = canvas.getContext('2d');
+        let pts = [];
+        function initP() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            pts = Array.from({length: 40}, () => ({
+                x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+                s: Math.random() * 2, v: Math.random() * 0.3 + 0.1
+            }));
+        }
+        function drawP() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(0, 210, 255, 0.4)";
+            pts.forEach(p => {
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.s, 0, Math.PI*2); ctx.fill();
+                p.y += p.v; if(p.y > canvas.height) p.y = -5;
+            });
+            requestAnimationFrame(drawP);
+        }
+        initP(); drawP();
+        window.addEventListener('resize', initP);
+
+        function filterMenu() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('.food-item').forEach(item => {
+                const name = item.querySelector('.item-name').innerText.toLowerCase();
+                item.classList.toggle('hidden', !name.includes(query));
+            });
+        }
+
+        function handleReveal() {
+            document.querySelectorAll('.food-item').forEach((item, index) => {
+                const rect = item.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 50) {
+                    setTimeout(() => item.classList.add('reveal'), index * 30);
+                }
+            });
+        }
+
+        function openLight(src, name) {
+            document.getElementById('fullImg').src = src;
+            document.getElementById('modalName').innerText = name;
+            document.getElementById('imgModal').classList.add('active');
+            if(navigator.vibrate) navigator.vibrate(30);
+        }
+
+        function closeLight() { document.getElementById('imgModal').classList.remove('active'); }
+
+        function updateQty(id, change, name, price, listId) {
+            if (!cart[id]) {
+                cart[id] = { id, name, price, quantity: 0 };
+            }
+            cart[id].quantity += change;
+            if (cart[id].quantity <= 0) {
+                delete cart[id];
+                document.getElementById(`wrap-${id}`).classList.remove('active');
+            } else {
+                document.getElementById(`wrap-${id}`).classList.add('active');
+                document.getElementById(`val-${id}`).innerText = cart[id].quantity;
+            }
+            localStorage.setItem('brewverse_cart', JSON.stringify(cart));
+            updateUI();
+        }
+
+        function updateUI() {
+            const count = Object.values(cart).reduce((a, b) => a + b.quantity, 0);
+            document.getElementById('cart-count').innerText = count;
+            document.getElementById('floating-cart').classList.toggle('visible', count > 0);
+        }
+
+        window.addEventListener('scroll', handleReveal);
+        window.onload = () => { 
+            renderCategory(coffeeData, 'coffeeList');
+            renderCategory(shakeData, 'shakeList');
+            renderCategory(coolerData, 'coolerList');
+            updateUI(); 
+            handleReveal();
+        };
+    </script>
+</body>
+</html>
