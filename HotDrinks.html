@@ -20,9 +20,9 @@
             margin: 0; background: var(--bg); color: #fff;
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh; overflow-x: hidden;
-            /* HIGH-END BACKGROUND IMAGE */
-            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
-                        url('https://images.unsplash.com/photo-1507133750040-4a8f570083fa?q=80&w=1974&auto=format&fit=crop');
+            /* USING YOUR UPLOADED BACKGROUND IMAGE */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)), 
+                        url('images/coffee_bg.jpg'); 
             background-size: cover; background-position: center; background-attachment: fixed;
         }
 
@@ -44,9 +44,9 @@
             font-weight: 800; font-size: 0.7rem; letter-spacing: 2px; border: 1px solid var(--border);
             transition: 0.3s;
         }
-        .back-dashboard:hover { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--glow); }
+        .back-dashboard:hover { background: var(--accent); color: #000; }
 
-        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2.2rem; color: var(--accent); text-shadow: 0 0 20px rgba(201,166,107,0.2); }
+        h1 { font-family: 'Pacifico', cursive; margin: 0; font-size: 2.2rem; color: var(--accent); }
 
         .search-bar {
             background: var(--glass); border: 1px solid var(--border);
@@ -68,18 +68,16 @@
             transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .food-item.reveal { opacity: 1; transform: translateY(0); }
-        .food-item:hover { border-color: var(--accent); transform: translateY(-8px); background: rgba(255,255,255,0.06); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .food-item:hover { border-color: var(--accent); transform: translateY(-8px); background: rgba(255,255,255,0.06); }
 
         .item-thumb { 
             width: 95px; height: 95px; border-radius: 25px; object-fit: cover; 
             border: 1.5px solid var(--border); cursor: pointer; transition: 0.4s;
         }
-        .item-thumb:hover { transform: scale(1.1) rotate(3deg); border-color: var(--accent); }
 
         .item-info { flex-grow: 1; }
         .item-name { font-weight: 800; font-size: 1.15rem; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .scan-trigger { cursor: pointer; color: var(--accent); font-size: 1.2rem; opacity: 0.6; transition: 0.3s; }
-        .scan-trigger:hover { opacity: 1; transform: scale(1.2); }
+        .scan-trigger { cursor: pointer; color: var(--accent); font-size: 1.2rem; transition: 0.3s; }
         .item-price { color: var(--accent); font-weight: 800; font-size: 1.3rem; margin-top: 5px; }
 
         /* --- QTY CONTROLS --- */
@@ -107,7 +105,7 @@
         #floating-cart.visible { transform: scale(1); }
         .badge { position: absolute; top: -10px; right: -10px; background: #ff3366; color: #fff; min-width: 28px; height: 28px; border-radius: 50%; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; justify-content: center; border: 3px solid var(--bg); }
 
-        /* --- SCAN MODAL --- */
+        /* --- SCAN MODAL | MATCHING YOUR PROVIDED STYLE --- */
         .img-modal {
             position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px);
             display: none; align-items: center; justify-content: center; z-index: 2000;
@@ -168,25 +166,25 @@
 
     <script>
         const drinkData = [
-            { id: 'h1', name: "Espresso", price: 89, food: "espresso.png" },
-            { id: 'h2', name: "Cappuccino", price: 129, food: "cappuccino.png" },
-            { id: 'h3', name: "Café Latte", price: 139, food: "latte.png" },
-            { id: 'h4', name: "Café Mocha", price: 149, food: "mocha.png" },
-            { id: 'h5', name: "Hot Chocolate", price: 159, food: "hot_chocolate.png" },
-            { id: 'h6', name: "Masala Tea", price: 59, food: "masala_tea.png" },
-            { id: 'h7', name: "Green Tea", price: 69, food: "green_tea.png" },
-            { id: 'h8', name: "Americano", price: 119, food: "americano.png" },
-            { id: 'h9', name: "Macchiato", price: 129, food: "macchiato.png" },
-            { id: 'h10', name: "Flat White", price: 149, food: "flat_white.png" },
-            { id: 'h11', name: "Caramel Latte", price: 159, food: "caramel_latte.png" },
-            { id: 'h12', name: "Hazelnut Coffee", price: 169, food: "hazelnut_coffee.png" },
-            { id: 'h13', name: "Vanilla Latte", price: 159, food: "vanilla_latte.png" },
-            { id: 'h14', name: "Irish Coffee (NA)", price: 179, food: "irish_coffee.png" },
-            { id: 'h15', name: "Honey Lemon Tea", price: 79, food: "honey_lemon_tea.png" },
-            { id: 'h16', name: "Ginger Tea", price: 59, food: "ginger_tea.png" },
-            { id: 'h17', name: "Lemon Tea", price: 69, food: "lemon_tea.png" },
-            { id: 'h18', name: "Kashmiri Kahwa", price: 89, food: "kahwa.png" },
-            { id: 'h19', name: "Adrak Elaichi Tea", price: 69, food: "adrak_tea.png" }
+            { id: 'h1', name: "Espresso", price: 89, food: "espresso_qr.png" },
+            { id: 'h2', name: "Cappuccino", price: 129, food: "cappuccino_qr.png" },
+            { id: 'h3', name: "Café Latte", price: 139, food: "latte_qr.png" },
+            { id: 'h4', name: "Café Mocha", price: 149, food: "mocha_qr.png" },
+            { id: 'h5', name: "Hot Chocolate", price: 159, food: "hot_chocolate_qr.png" },
+            { id: 'h6', name: "Masala Tea", price: 59, food: "masala_tea_qr.png" },
+            { id: 'h7', name: "Green Tea", price: 69, food: "green_tea_qr.png" },
+            { id: 'h8', name: "Americano", price: 119, food: "americano_qr.png" },
+            { id: 'h9', name: "Macchiato", price: 129, food: "macchiato_qr.png" },
+            { id: 'h10', name: "Flat White", price: 149, food: "flat_white_qr.png" },
+            { id: 'h11', name: "Caramel Latte", price: 159, food: "caramel_latte_qr.png" },
+            { id: 'h12', name: "Hazelnut Coffee", price: 169, food: "hazelnut_coffee_qr.png" },
+            { id: 'h13', name: "Vanilla Latte", price: 159, food: "vanilla_latte_qr.png" },
+            { id: 'h14', name: "Irish Coffee (NA)", price: 179, food: "irish_coffee_qr.png" },
+            { id: 'h15', name: "Honey Lemon Tea", price: 79, food: "honey_lemon_tea_qr.png" },
+            { id: 'h16', name: "Ginger Tea", price: 59, food: "ginger_tea_qr.png" },
+            { id: 'h17', name: "Lemon Tea", price: 69, food: "lemon_tea_qr.png" },
+            { id: 'h18', name: "Kashmiri Kahwa", price: 89, food: "kahwa_qr.png" },
+            { id: 'h19', name: "Adrak Elaichi Tea", price: 69, food: "adrak_tea_qr.png" }
         ];
 
         let cart = JSON.parse(localStorage.getItem('brewverse_cart')) || {};
@@ -217,7 +215,7 @@
             handleReveal();
         }
 
-        /* --- DYNAMIC DUST ENGINE --- */
+        /* --- DUST VORTEX ENGINE --- */
         const canvas = document.getElementById('dust-canvas');
         const ctx = canvas.getContext('2d');
         let pts = [];
