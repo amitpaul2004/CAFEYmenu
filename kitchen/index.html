@@ -251,7 +251,7 @@
 
         window.onload = refreshKDS;
 
-        const socket = io('http://192.168.0.110:3000');
+        const socket = io('https://brewverse-hub.onrender.com');
 
 socket.on('receiveOrder', (order) => {
     console.log("New Order Received:", order);
