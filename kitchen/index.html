@@ -250,24 +250,6 @@
         });
 
         window.onload = refreshKDS;
-
-        const socket = io('https://brewverse-hub.onrender.com');
-
-socket.on('receiveOrder', (order) => {
-    console.log("New Order Received:", order);
-    
-    // 1. Play your Kitchen Sound
-    const audio = new Audio('ding.mp3');
-    audio.play();
-    
-    // 2. Add the order to your UI
-    renderNewOrderCard(order);
-    
-    // 3. Update Admin Charts (if on Admin page)
-    if(window.location.href.includes('admin')) {
-        updateSalesChart(order.total);
-    }
-});
     </script>
 </body>
 </html>

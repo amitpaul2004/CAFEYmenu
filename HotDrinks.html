@@ -163,8 +163,7 @@
             <button class="modal-close-btn" onclick="closeLight()">✕ CLOSE VIEW</button>
         </div>
     </div>
-    
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
     <script>
         const drinkData = [
             { id: 'h1', name: "Espresso", price: 89, food: "espresso_qr.png" },
@@ -290,20 +289,6 @@
 
         window.addEventListener('scroll', handleReveal);
         window.onload = () => { render(); updateUI(); };
-
-   const socket = io('http://YOUR_SERVER_IP:3000');
-
-    function placeOrder() {
-        const cart = JSON.parse(localStorage.getItem('brewverse_cart'));
-        // Send data to the hub
-        socket.emit('sendOrder', {
-            items: cart,
-            table: "Table 05",
-            time: new Date().toLocaleTimeString()
-        });
-        alert("Order sent to Kitchen!");
-    }
-        
     </script>
 </body>
 </html>
