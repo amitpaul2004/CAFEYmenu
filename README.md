@@ -119,4 +119,4 @@
 ### 🛠️ Installation
 
 ```bash
-git clone https://github.com/amitpaul2004/Reptile-Interactive-Cursor
+https://github.com/amitpaul2004/CAFEYmenu.git
