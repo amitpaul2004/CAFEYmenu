@@ -79,7 +79,42 @@
 
 ---
 
-## 📦 Installation & Setup
+## 🌲 ## 📂 Project Structure
+
+```bash
+📦 BrewVerse-Elite/
+│
+├── 🛡️ admin/
+│   └── 🌐 index.html
+│
+├── 🖼️ images/
+│   ├── 🖼️ background.jpg
+│   ├── 🔳 blue_lagoon_qr.png
+│   ├── 🖼️ cgb.jpg
+│   ├── 🖼️ coffee_bg.jpg
+│   ├── 🖼️ download.jpg
+│   ├── 🖼️ fries.png
+│   ├── 🔳 margarita_qr.png
+│   ├── 🖼️ peri_fries.jpg
+│   └── 🖼️ scanner.jpeg
+│
+├── 👨‍🍳 kitchen/
+│   └── 🌐 index.html
+│
+├── ✅ CONFIRM_ORDER.html
+├── 🧊 ColdDrinks.html
+├── 🍰 Desserts.html
+├── ☕ HotDrinks.html
+├── 📜 LICENSE.md
+├── 🍽️ MainCourse.html
+├── 🍹 Mocktails.html
+├── 💳 Payment.html
+├── 📘 README.md
+├── 🍟 Starters.html
+├── 🛒 cart.html
+└── 🏠 index.html
+```
+
 
 ### 1️⃣ Clone Backend Hub
 ```bash
