@@ -79,7 +79,7 @@
 
 ---
 
-## 🌲 ## 📂 Project Structure
+## 🌲Project Structure
 
 ```bash
 📦 BrewVerse-Elite/
