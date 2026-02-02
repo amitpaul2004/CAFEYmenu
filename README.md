@@ -42,9 +42,9 @@
 
 | Terminal | Live Link |
 |---------|----------|
-| 👤 User Menu | **[Open User Terminal](YOUR_USER_DEPLOY_LINK)** |
-| 👨‍🍳 Kitchen Panel | **[Open Kitchen Terminal](YOUR_KITCHEN_DEPLOY_LINK)** |
-| 🧑‍💼 Admin Dashboard | **[Open Admin Terminal](YOUR_ADMIN_DEPLOY_LINK)** |
+| 👤 User Menu | **[Open User Terminal](https://cafe-ymenu.vercel.app/)** |
+| 👨‍🍳 Kitchen Panel | **[Open Kitchen Terminal](https://cafe-ymenu.vercel.app/kitchen)** |
+| 🧑‍💼 Admin Dashboard | **[Open Admin Terminal](https://cafe-ymenu.vercel.app/admin)** |
 
 > Replace the above links with your actual deployed URLs.
 
@@ -53,13 +53,13 @@
 ## 🖼️ Terminal Preview (Screenshots)
 
 ### 👤 User Terminal Preview
-![User Preview](./preview/user-terminal.png)
-
-### 👨‍🍳 Kitchen Terminal Preview
-![Kitchen Preview](./preview/kitchen-terminal.png)
+<img width="600" height="646" alt="image" src="https://github.com/user-attachments/assets/57f96482-cc4b-41f1-b91e-adf1059175b4" />
 
 ### 🧑‍💼 Admin Terminal Preview
-![Admin Preview](./preview/admin-terminal.png)
+<img width="600" height="646" alt="image" src="https://github.com/user-attachments/assets/8cfb0c45-0117-4147-ba34-d4dc87e406a1" />
+
+### 👨‍🍳 Kitchen Terminal Preview
+<img width="600" height="646" alt="image" src="https://github.com/user-attachments/assets/94145e0f-992b-4986-b10d-b30abb36142b" />
 
 📌 **Tip:** Create a folder named **preview/** in your repo and upload these screenshots inside it.
 
