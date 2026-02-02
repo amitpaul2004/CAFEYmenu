@@ -116,8 +116,7 @@
 ```
 
 
-### 1️⃣ Clone Backend Hub
+### 🛠️ Installation
+
 ```bash
-git clone https://github.com/your-username/brewverse-hub.git
-cd brewverse-hub
-npm install
+git clone https://github.com/amitpaul2004/Reptile-Interactive-Cursor
