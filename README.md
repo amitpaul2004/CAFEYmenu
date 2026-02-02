@@ -1,41 +1,43 @@
-# ☕ BrewVerse Elite | Real-Time Restaurant Management System
+<div align="center">
 
-![Banner](https://img.shields.io/badge/Architecture-Three--Tier-gold?style=for-the-badge)
-![Socket.io](https://img.shields.io/badge/Real--Time-Socket.io-black?style=for-the-badge&logo=socket.io)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+# ☕ BrewVerse Elite  
+### ⚡ Real-Time Restaurant Management System
 
-**BrewVerse Elite** is a modern, high-performance **real-time restaurant management system** built for seamless communication between **customers**, **kitchen staff**, and **restaurant administrators**.
+<img src="https://readme-typing-svg.herokuapp.com?font=Poppins&size=22&duration=3000&pause=800&color=F7C23E&center=true&vCenter=true&width=700&lines=Premium+Multi-Terminal+Restaurant+System;Live+Kitchen+Orders+%7C+Admin+Analytics;WebSocket+Real-Time+Order+Flow;Built+for+Speed%2C+Clarity%2C+and+Luxury+UI" />
 
-It offers a premium multi-terminal workflow where each terminal works independently (even on separate devices) while staying synced in real-time using WebSocket technology.
+<br/>
 
----
+<img src="https://img.shields.io/badge/Architecture-Three--Tier-gold?style=for-the-badge&logo=buffer" />
+<img src="https://img.shields.io/badge/Real--Time-Socket.io-black?style=for-the-badge&logo=socket.io" />
+<img src="https://img.shields.io/badge/UI-Glassmorphism-8A2BE2?style=for-the-badge&logo=css3" />
+<img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" />
 
-## 🚀 The Multi-Terminal Experience
-
-This system consists of **three independent terminals** connected to one real-time backend hub:
-
-### ✅ 1) User Terminal (`/index.html`)
-A premium digital café menu with:
-- **Tap & Scan** drink previews  
-- **Glassmorphism UI**
-- Real-time **Tray / Cart**
-- Smooth mobile-first interface
-
-### ✅ 2) Kitchen Terminal (`/kitchen`)
-A live order stream for chefs:
-- Instant real-time order alerts
-- Automated **"Ding" sound** on new orders
-- Clean workflow display for preparation
-
-### ✅ 3) Executive Admin Terminal (`/admin`)
-A dashboard for owners:
-- Real-time order monitoring
-- Sales tracking
-- Order history viewer
-- Revenue analytics
+</div>
 
 ---
 
+## ✨ About BrewVerse Elite
+
+**BrewVerse Elite** is a modern, high-performance **Real-Time Restaurant Management System** created for smooth communication between:
+
+✅ Customers  
+✅ Kitchen Staff  
+✅ Restaurant Owners (Admin)
+
+🚀 Each terminal can run on different devices but stays synced in real-time using **WebSocket / Socket.io**.
+
+---
+
+## 🔥 System Highlights (Elite Features)
+
+✅ **Premium UI (Glassmorphism + Smooth Animations)**  
+✅ **Live Multi-Terminal Sync**  
+✅ **Instant Order Alerts + Auto Ding Sound**  
+✅ **Real-Time Sales & Revenue Analytics**  
+✅ **Mobile Friendly Menu System**  
+✅ **Fast Backend + Scalable Architecture**
+
+---
 ## 🌐 Live Deployment Links
 
 | Terminal | Live Link |
