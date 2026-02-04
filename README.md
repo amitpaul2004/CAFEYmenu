@@ -65,7 +65,6 @@
 ### 👨‍🍳 Kitchen Terminal Preview
 <img width="600" height="646" alt="image" src="https://github.com/user-attachments/assets/94145e0f-992b-4986-b10d-b30abb36142b" />
 
-📌 **Tip:** Create a folder named **preview/** in your repo and upload these screenshots inside it.
 
 ---
 
