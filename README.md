@@ -48,8 +48,10 @@
 
 
 ---
-### Scan the QR (WEBSITE)
+### 🌐Scan the QR (WEBSITE)
 <img width="472" height="548" alt="image" src="https://github.com/user-attachments/assets/0efbb572-e51b-4360-9aee-1823674bceb3" />
+
+---
 
 
 ## 🖼️ Terminal Preview (Screenshots)
