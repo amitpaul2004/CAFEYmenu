@@ -46,9 +46,11 @@
 | 👨‍🍳 Kitchen Panel | **[Open Kitchen Terminal](https://cafe-ymenu.vercel.app/kitchen)** |
 | 🧑‍💼 Admin Dashboard | **[Open Admin Terminal](https://cafe-ymenu.vercel.app/admin)** |
 
-> Replace the above links with your actual deployed URLs.
 
 ---
+### Scan the QR (WEBSITE)
+<img width="472" height="548" alt="image" src="https://github.com/user-attachments/assets/0efbb572-e51b-4360-9aee-1823674bceb3" />
+
 
 ## 🖼️ Terminal Preview (Screenshots)
 
