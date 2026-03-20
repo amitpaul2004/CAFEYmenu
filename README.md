@@ -3,6 +3,7 @@
 # ☕ BrewVerse Elite  
 ### ⚡ Real-Time Restaurant Management System
 
+
 <img src="https://readme-typing-svg.herokuapp.com?font=Poppins&size=22&duration=3000&pause=800&color=F7C23E&center=true&vCenter=true&width=700&lines=Premium+Multi-Terminal+Restaurant+System;Live+Kitchen+Orders+%7C+Admin+Analytics;WebSocket+Real-Time+Order+Flow;Built+for+Speed%2C+Clarity%2C+and+Luxury+UI" />
 
 <br/>
